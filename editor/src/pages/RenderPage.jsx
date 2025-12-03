@@ -25,6 +25,7 @@ export default function EditorPage() {
                 // Set the timer's maxTime based on the active composition duration
                 const maxTime = useProjectStore.getState().getActiveCompMaxTime();
                 useTimerStore.getState().setMaxTime(maxTime);
+                window.maxTime = maxTime;
             } catch (error) {
                 console.error("Error loading project:", error);
             }

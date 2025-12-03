@@ -61,9 +61,7 @@ async function captureScreenshots() {
 
         const startTime = Date.now();
 
-        const endTime = 4; // 3 seconds duration
         const fps = 25; // 25 frames per second
-        const totalFrames = endTime * fps - 1; // Calculate total number of frames (75 frames)
 
         // Launch the browser
         const browser = await puppeteer.launch({
@@ -81,7 +79,7 @@ async function captureScreenshots() {
         });
 
         // Navigate to the URL with increased timeout
-        const url = "http://localhost:4000/renderpage/632ab2e9-70fb-429e-a682-a3542fcc9cd8";
+        const url = "http://localhost:4000/renderpage/template1";
 
         console.log("Loading page...");
         await page.goto(url, {
@@ -92,6 +90,12 @@ async function captureScreenshots() {
         // Additional wait to ensure page is fully loaded
         // await new Promise((resolve) => setTimeout(resolve, 2000));
         console.log("Page loaded successfully");
+
+        // Get maxTime from the page
+        const endTime = await page.evaluate(() => window.maxTime);
+        console.log(`Using maxTime from page: ${endTime} seconds`);
+
+        const totalFrames = endTime * fps - 1;
 
         // Capture frames
         for (let frame = 0; frame <= totalFrames; frame++) {
