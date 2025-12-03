@@ -10,7 +10,7 @@ import Inspector from "@/components/Editor/Inspector";
 import TimerControls from "@/components/Editor/TimerControls";
 import Viewer from "@/components/Editor/Viewer";
 import JsonView from "@/components/Editor/JsonView";
-// import TestComponent from "editor-timeline/src/components/TestComponent";
+
 import { loadProjectData } from "@/lib/project-utils.js";
 
 export default function EditorPage() {
@@ -21,6 +21,7 @@ export default function EditorPage() {
         async function loadProject() {
             try {
                 useEditorStore.getState().setProjectId(projectId);
+
                 const projectData = await loadProjectData(projectId);
                 useProjectStore.setState(projectData);
 

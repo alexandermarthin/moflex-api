@@ -3,13 +3,8 @@ import { useParams } from "react-router-dom";
 import { useProjectStore } from "@/stores/projectStore";
 import { useEditorStore } from "@/stores/editorStore";
 import { useTimerStore } from "@/stores/timerStore";
-import AssetList from "@/components/Editor/AssetList";
-import SelectedAsset from "@/components/Editor/SelectedAsset";
-import ClipList from "@/components/Editor/ClipList";
-import Inspector from "@/components/Editor/Inspector";
-import TimerControls from "@/components/Editor/TimerControls";
 import Viewer from "@/components/Editor/Viewer";
-import JsonView from "@/components/Editor/JsonView";
+
 import { loadProjectData } from "@/lib/project-utils.js";
 
 export default function EditorPage() {
