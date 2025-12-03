@@ -1,5 +1,6 @@
 # Dependencies
 node_modules/
+render-service/node_modules/
 
 # Render service output
 render-service/output/
