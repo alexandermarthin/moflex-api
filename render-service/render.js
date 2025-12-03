@@ -1,7 +1,7 @@
-const puppeteer = require("puppeteer");
-const ffmpeg = require("fluent-ffmpeg");
-const fs = require("fs");
-const path = require("path");
+import puppeteer from "puppeteer";
+import ffmpeg from "fluent-ffmpeg";
+import fs from "fs";
+import path from "path";
 
 function cleanOutputDirectory() {
     const outputDir = "output";
@@ -55,6 +55,7 @@ async function generateVideo() {
 }
 
 async function captureScreenshots() {
+    let browser;
     try {
         // Clean output directory before starting
         cleanOutputDirectory();
@@ -64,7 +65,7 @@ async function captureScreenshots() {
         const fps = 25; // 25 frames per second
 
         // Launch the browser
-        const browser = await puppeteer.launch({
+        browser = await puppeteer.launch({
             headless: "new", // Use new headless mode
             args: ["--no-sandbox", "--disable-setuid-sandbox"], // Add additional args for stability
         });
@@ -79,7 +80,8 @@ async function captureScreenshots() {
         });
 
         // Navigate to the URL with increased timeout
-        const url = "http://localhost:4000/renderpage/template1";
+        const templateId = "template1";
+        const url = `http://localhost:4000/renderpage/${templateId}`;
 
         console.log("Loading page...");
         await page.goto(url, {

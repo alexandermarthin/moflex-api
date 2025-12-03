@@ -1,21 +1,38 @@
-const fastify = require("fastify")({ logger: true });
+import "dotenv/config";
+import Fastify from "fastify";
 
-// GET endpoint with query parameter
-fastify.get("/greet", async (request, reply) => {
-    const { name } = request.query;
-    if (!name) {
-        return reply.status(400).send({ error: 'Missing "name" query parameter' });
+const fastify = Fastify({ logger: true });
+
+const API_KEY = process.env.API_KEY;
+
+if (!API_KEY) {
+    console.error("ERROR: API_KEY environment variable is required");
+    process.exit(1);
+}
+
+// Auth hook - validates API key on every request
+fastify.addHook("preHandler", async (request, reply) => {
+    // Skip auth for health check
+    if (request.url === "/health") return;
+
+    const apiKey = request.headers["x-api-key"];
+
+    if (apiKey !== API_KEY) {
+        reply.status(401).send({ error: "Unauthorized: Invalid API key" });
+        return;
     }
-    return { message: `Hallo ${name}` };
 });
 
+// Health check endpoint (public)
+fastify.get("/health", async () => ({ status: "ok" }));
+
 // POST endpoint with body
-fastify.post("/greet", async (request, reply) => {
-    const { name } = request.body || {};
-    if (!name) {
-        return reply.status(400).send({ error: 'Missing "name" in request body' });
+fastify.post("/render", async (request, reply) => {
+    const { id } = request.body || {};
+    if (!id) {
+        return reply.status(400).send({ error: 'Missing "id" in request body' });
     }
-    return { message: `Hallo ${name}` };
+    return { message: `Rendering video for id ${id}` };
 });
 
 const start = async () => {
