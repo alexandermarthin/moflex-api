@@ -1,0 +1,26 @@
+flowchart TD
+  %% --- Per-layer pipeline ---
+  Source["Source (Footage/Shape/Text - sRGB to Linear - Premult Alpha)"] --> Masks["Render & Combine Masks (Shape Masks + Track Matte)"]
+  Masks --> Effects{"Any Effects?"}
+  Effects -->|Yes| EFX["Effects Stack (ping-pong FBOs)"]
+  Effects -->|No| Bypass["Bypass"]
+  EFX --> Branch{"2D or 3D?"}
+  Bypass --> Branch
+
+  Branch -->|2D| Ortho["Ortho Fullscreen Render (ScreenQuad to layerFBO)"]
+  Branch -->|3D| Scene3D["3D Scene Render (plane/mesh with transforms)"]
+
+  Ortho --> Styles{"Layer Styles?"}
+  Scene3D --> Styles
+  Styles -->|Yes| StylesPass["Layer Styles Passes"] --> LayerOut["Layer FBO"]
+  Styles -->|No| LayerOut
+
+  %% --- Stack composite (layer order) ---
+  Accum["Accum FBO init transparent black"] --> Accum
+  LayerOut --> Blend["Composite with Blend Mode (premultiplied alpha)"]
+  Blend --> Accum
+
+  %% --- Adjustment layers (post over entire accum) ---
+  Accum --> Adj{"Adjustment Layer?"}
+  Adj -->|Yes| AdjPass["Adjustment Fullscreen Pass"] --> Accum
+  Adj -->|No| Accum

@@ -1,0 +1,43 @@
+# 💾 Node.js dependencies
+node_modules/
+npm-debug.log
+yarn-error.log
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# 🛑 Environment variables
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+
+# 🚀 Build output
+dist/
+build/
+
+# ⚡ Vite-specific
+.vite/
+.cache/
+*.vitepress/
+*.temp/
+
+# 🛠 IDE-specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 📦 Cache
+.cache/
+.tmp/
+*.log
+
+# 💻 macOS specific
+.DS_Store
+
+# 🚀 Deployment artifacts (optional)
+*.bak
+*.tar
+*.zip

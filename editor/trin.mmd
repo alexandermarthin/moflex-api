@@ -1,0 +1,29 @@
+flowchart TD
+  %% --- Per-layer pipeline ---
+  S1["(1) Source (Footage/Shape/Text – working space; straight alpha)"] --> S2["(2) Render & Combine Masks (Shape Masks)"]
+  S2 --> S3{"(3) Any Effects?"}
+  S3 -->|Yes| S4["(4) Effects Stack (ping-pong FBOs)"]
+  S3 -->|No| S5["(5) Bypass"]
+  S4 --> S6{"(6) 2D or 3D?"}
+  S5 --> S6
+
+  S6 -->|2D| S7["(7) Ortho Fullscreen Render (ScreenQuad to layerFBO)"]
+  S6 -->|3D| S8["(8) 3D Scene Render (plane/mesh with transforms)"]
+
+  S7 --> S9{"(9) Layer Styles?"}
+  S8 --> S9
+  S9 -->|Yes| S10["(10) Layer Styles Passes"] --> S11["(11) Layer FBO"]
+  S9 -->|No| S11
+
+  %% --- Track matte after effects/transforms/styles ---
+  S11 --> S12["(12) Apply Track Matte / Set Matte (post-effects)"]
+
+  %% --- Stack composite (layer order) ---
+  A1["(A1) Accum FBO init transparent black"] --> A1
+  S12 --> A2["(A2) Composite with Blend Mode (straight alpha)"]
+  A2 --> A1
+
+  %% --- Adjustment layers (post over entire accum) ---
+  A1 --> A3{"(A3) Adjustment Layer?"}
+  A3 -->|Yes| A4["(A4) Adjustment Fullscreen Pass"] --> A1
+  A3 -->|No| A1

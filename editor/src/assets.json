@@ -1,0 +1,68 @@
+[
+    {
+        "id": 68,
+        "name": "audio.wav",
+        "type": "audio",
+        "parentId": -1
+    },
+    {
+        "id": 65,
+        "name": "Solids",
+        "type": "folder",
+        "parentId": -1
+    },
+    {
+        "id": 66,
+        "name": "Deep Cyan Solid 1",
+        "type": "solid",
+        "parentId": 65
+    },
+    {
+        "id": 35,
+        "name": "Still_image_HD",
+        "type": "composition",
+        "parentId": -1
+    },
+    {
+        "id": 49,
+        "name": "Still_image_square",
+        "type": "composition",
+        "parentId": -1
+    },
+    {
+        "id": 63,
+        "name": "Stills",
+        "type": "folder",
+        "parentId": 65
+    },
+    {
+        "id": 20,
+        "name": "Still_image_HD.jpg",
+        "type": "image",
+        "parentId": 63
+    },
+    {
+        "id": 17,
+        "name": "Still_image_square.jpg",
+        "type": "image",
+        "parentId": 63
+    },
+    {
+        "id": 64,
+        "name": "Videos",
+        "type": "folder",
+        "parentId": 63
+    },
+    {
+        "id": 18,
+        "name": "kort-video-square.mp4",
+        "type": "video",
+        "parentId": 64
+    },
+    {
+        "id": 19,
+        "name": "kort-video.mp4",
+        "type": "video",
+        "parentId": 64
+    }
+]

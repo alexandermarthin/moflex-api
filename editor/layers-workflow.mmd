@@ -1,0 +1,50 @@
+%% Layers rendering + track matte workflow
+flowchart TD
+    subgraph "Viewer / ThreeDScene setup"
+        A["PerspectiveCamera\nambientLight, pointLight\nbackground color"]
+    end
+
+    A --> B["Order clips: Object.entries(clips).reverse()"]
+    B --> C{"For each [id, clip]\nclip.inPoint <= time?"}
+    C -->|No| D["Skip clip"]
+    C -->|Yes| E{"Has track matte? (clip.trackMatte)"}
+
+    %% No track matte → render normally
+    E -->|No| R["contentEl = renderClipEl(id, clip)"]
+    R --> M["Render content in scene"]
+
+    %% Track matte flow
+    E -->|Yes| F["matteClip = clips[tm.matteLayerId]"]
+    F --> G["contentEl = renderClipEl(id, clip)"]
+    F --> H["matteEl = renderClipEl(tm.matteLayerId, matteClip)"]
+    H --> I["consumed.add(tm.matteLayerId)\n(hide matte layer in main scene)"]
+
+    G --> J{"mode = alpha | luma\ninvert = tm.inverted or mode includes 'inverted'"}
+    H --> J
+
+    J --> K["Wrap content in <TrackMatteLayer> with props:\n- mode (alpha/luma)\n- invert (true/false)\n- matte = matteEl"]
+    K --> L["Render masked content in scene"]
+
+    %% renderClipEl internals
+    subgraph "renderClipEl(clip)"
+        T{"clip.layerType"}
+        T --> T1["solid → <SolidLayer solidItem={assets[clip.sourceId]}>" ]
+        T --> T2["image → <ImageLayer asset={assets[clip.sourceId]}>" ]
+        T --> T3["video → <VideoLayer asset={assets[clip.sourceId]}>" ]
+        T --> T4["text → <TextLayer>" ]
+        T --> T5["shape → <ShapeLayer>" ]
+        T --> T6["audio → <AudioLayer asset={assets[clip.sourceId]}>" ]
+    end
+
+    %% Show that contentEl and matteEl are produced by renderClipEl
+    G -.-> T
+    H -.-> T
+
+    %% Notes
+    N1["Ordering: top-most layer last (reverse)" ]
+    N2["Only clips with inPoint <= time are considered" ]
+    N3["Matte layer is not rendered separately due to 'consumed' set" ]
+
+    B --> N1
+    C --> N2
+    I --> N3
