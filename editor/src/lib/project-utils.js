@@ -118,8 +118,8 @@ export const ensureTracksFromClips = (clips, tracks) => {
  */
 export const loadProjectData = async (projectId) => {
     try {
-        // const projectUrl = `${FILE_API_ENDPOINTS.DOWNLOAD}/${projectId}/project.json`;
-        const projectUrl = "/project.json";
+        const projectUrl = `${FILE_API_ENDPOINTS.DOWNLOAD}/${projectId}/project.json`;
+        // const projectUrl = "/project.json";
         const response = await fetch(projectUrl);
         if (!response.ok) {
             throw new Error("Failed to load project.json");

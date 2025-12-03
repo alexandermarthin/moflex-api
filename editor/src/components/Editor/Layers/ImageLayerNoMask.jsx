@@ -17,8 +17,8 @@ const ImageLayer = ({ id, clip, asset, updatePropertyValue, setSelectedClipId, s
 
     const [localRelativeRotation, setLocalRelativeRotation] = useState([relativeRotation.x, relativeRotation.y, relativeRotation.z]);
 
-    // const imageUrl = `${FILE_API_ENDPOINTS.DOWNLOAD}/${projectId}/${asset.url}`;
-    const imageUrl = "/632ab2e9-70fb-429e-a682-a3542fcc9cd8.jpg";
+    const imageUrl = `${FILE_API_ENDPOINTS.DOWNLOAD}/${projectId}/${asset.url}`;
+    // const imageUrl = "/632ab2e9-70fb-429e-a682-a3542fcc9cd8.jpg";
     const texture = useLoader(TextureLoader, imageUrl);
     if (texture) {
         texture.colorSpace = THREE.SRGBColorSpace;
