@@ -2,31 +2,32 @@ import puppeteer from "puppeteer";
 import ffmpeg from "fluent-ffmpeg";
 import fs from "fs";
 import path from "path";
+import crypto from "crypto";
+
+const OUTPUT_DIR = "output";
 
 function cleanOutputDirectory() {
-    const outputDir = "output";
-
     // Create output directory if it doesn't exist
-    if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir);
+    if (!fs.existsSync(OUTPUT_DIR)) {
+        fs.mkdirSync(OUTPUT_DIR);
         return;
     }
 
     // Read all files in the output directory
-    const files = fs.readdirSync(outputDir);
+    const files = fs.readdirSync(OUTPUT_DIR);
 
     // Delete each file
     for (const file of files) {
-        fs.unlinkSync(path.join(outputDir, file));
+        fs.unlinkSync(path.join(OUTPUT_DIR, file));
     }
 }
 
-async function generateVideo() {
+async function generateVideo(videoPath) {
     return new Promise((resolve, reject) => {
         ffmpeg()
-            .input("output/frame_%04d.jpg")
+            .input(`${OUTPUT_DIR}/frame_%04d.jpg`)
             .inputFPS(25)
-            .output("animation.mp4")
+            .output(videoPath)
             .videoCodec("h264_videotoolbox") //libx264
             .outputFPS(25)
             .addOption("-color_primaries", "bt709")
@@ -34,14 +35,7 @@ async function generateVideo() {
             .addOption("-colorspace", "bt709")
             .addOption("-color_range", "tv")
             .addOption("-pix_fmt", "yuv444p") //yuv420p yuv444p
-            // .addOption("-crf", "10")
             .addOption("-b:v", "10000k")
-            // .addOption("-maxrate", "50M")
-            // .addOption("-bufsize", "50M")
-            // Add QuickTime compatibility options
-            // .addOption("-movflags", "+faststart")
-            // .addOption("-profile:v", "baseline")
-            // .addOption("-level", "3.0")
             .on("end", () => {
                 console.log("Video generation completed");
                 resolve();
@@ -54,20 +48,28 @@ async function generateVideo() {
     });
 }
 
-async function captureScreenshots() {
+/**
+ * Render a video for the given template
+ * @param {string} templateId - The template ID to render
+ * @returns {Promise<{videoPath: string, outputDir: string}>} - Paths for cleanup
+ */
+export async function renderVideo(templateId) {
     let browser;
     try {
         // Clean output directory before starting
         cleanOutputDirectory();
 
         const startTime = Date.now();
+        const fps = 25;
 
-        const fps = 25; // 25 frames per second
+        // Generate UUID for video filename
+        const videoId = crypto.randomUUID();
+        const videoPath = `${videoId}.mp4`;
 
         // Launch the browser
         browser = await puppeteer.launch({
-            headless: "new", // Use new headless mode
-            args: ["--no-sandbox", "--disable-setuid-sandbox"], // Add additional args for stability
+            headless: "new",
+            args: ["--no-sandbox", "--disable-setuid-sandbox"],
         });
 
         // Create a new page
@@ -80,17 +82,14 @@ async function captureScreenshots() {
         });
 
         // Navigate to the URL with increased timeout
-        const templateId = "template1";
         const url = `http://localhost:4000/renderpage/${templateId}`;
 
-        console.log("Loading page...");
+        console.log(`Loading page for template: ${templateId}...`);
         await page.goto(url, {
-            waitUntil: ["networkidle0", "domcontentloaded"], // Wait for both conditions
-            timeout: 60000, // Increase timeout to 60 seconds
+            waitUntil: ["networkidle0", "domcontentloaded"],
+            timeout: 60000,
         });
 
-        // Additional wait to ensure page is fully loaded
-        // await new Promise((resolve) => setTimeout(resolve, 2000));
         console.log("Page loaded successfully");
 
         // Get maxTime from the page
@@ -101,20 +100,14 @@ async function captureScreenshots() {
 
         // Capture frames
         for (let frame = 0; frame <= totalFrames; frame++) {
-            // Calculate current time
             const currentTime = frame / fps;
 
-            // Set the animation time
             await page.evaluate((time) => {
                 window.setTime(time);
             }, currentTime);
 
-            // Wait for a short moment to ensure animation update
-            // await new Promise((resolve) => setTimeout(resolve, 50));
-
-            // Take a screenshot with frame number in filename
             await page.screenshot({
-                path: `output/frame_${String(frame).padStart(4, "0")}.jpg`,
+                path: `${OUTPUT_DIR}/frame_${String(frame).padStart(4, "0")}.jpg`,
                 type: "jpeg",
                 quality: 100,
                 fullPage: true,
@@ -127,24 +120,25 @@ async function captureScreenshots() {
 
         // Close the browser
         await browser.close();
+        browser = null;
 
         // Generate video from frames
         console.log("Starting video generation...");
-        await generateVideo();
+        await generateVideo(videoPath);
 
-        const totalTime = (Date.now() - startTime) / 1000; // Convert to seconds
+        const totalTime = (Date.now() - startTime) / 1000;
         console.log(`Process completed! Total time: ${totalTime.toFixed(2)} seconds`);
+
+        return { videoPath, outputDir: OUTPUT_DIR };
     } catch (error) {
-        console.error("Error in process:", error);
         // Try to close the browser if it exists
-        try {
-            if (browser) await browser.close();
-        } catch (e) {
-            console.error("Error closing browser:", e);
+        if (browser) {
+            try {
+                await browser.close();
+            } catch (e) {
+                console.error("Error closing browser:", e);
+            }
         }
-        process.exit(1); // Exit with error code
+        throw error;
     }
 }
-
-// Run the screenshot capture
-captureScreenshots();

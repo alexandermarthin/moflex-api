@@ -1,5 +1,9 @@
 import "dotenv/config";
 import Fastify from "fastify";
+import fs from "fs";
+import path from "path";
+import { renderVideo } from "./render.js";
+import { uploadFile } from "./upload.js";
 
 const fastify = Fastify({ logger: true });
 
@@ -26,13 +30,55 @@ fastify.addHook("preHandler", async (request, reply) => {
 // Health check endpoint (public)
 fastify.get("/health", async () => ({ status: "ok" }));
 
-// POST endpoint with body
-fastify.post("/render", async (request, reply) => {
-    const { id } = request.body || {};
-    if (!id) {
-        return reply.status(400).send({ error: 'Missing "id" in request body' });
+/**
+ * Clean up local files after upload
+ */
+function cleanup(videoPath, outputDir) {
+    try {
+        // Delete the video file
+        if (fs.existsSync(videoPath)) {
+            fs.unlinkSync(videoPath);
+            console.log(`Deleted video file: ${videoPath}`);
+        }
+
+        // Delete all frame images in output directory
+        if (fs.existsSync(outputDir)) {
+            const files = fs.readdirSync(outputDir);
+            for (const file of files) {
+                fs.unlinkSync(path.join(outputDir, file));
+            }
+            console.log(`Cleaned up ${files.length} files from ${outputDir}`);
+        }
+    } catch (error) {
+        console.error("Error during cleanup:", error);
     }
-    return { message: `Rendering video for id ${id}` };
+}
+
+// Render endpoint - renders video, uploads to S3, returns URL
+fastify.post("/render", async (request, reply) => {
+    const { templateId } = request.body || {};
+
+    if (!templateId) {
+        return reply.status(400).send({ error: 'Missing "templateId" in request body' });
+    }
+
+    try {
+        // Render the video
+        console.log(`Starting render for template: ${templateId}`);
+        const { videoPath, outputDir } = await renderVideo(templateId);
+
+        // Upload to S3
+        console.log(`Uploading video to S3: ${videoPath}`);
+        const { url } = await uploadFile(videoPath);
+
+        // Clean up local files
+        cleanup(videoPath, outputDir);
+
+        return { url };
+    } catch (error) {
+        console.error("Render failed:", error);
+        return reply.status(500).send({ error: "Render failed", details: error.message });
+    }
 });
 
 const start = async () => {
