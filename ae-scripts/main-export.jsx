@@ -16,6 +16,7 @@ var CONFIG = {
 #include "mask-processors.jsx"
 #include "property-processors.jsx"
 #include "layer-processors.jsx"
+#include "api-dump.jsx"
 
 // Global variables for data collection
 var assets = {};
@@ -102,6 +103,13 @@ function exportProject() {
 app.beginUndoGroup("Export Project to JSON");
 try {
     exportProject();
+    
+    // Run API dump to discover available Essential Graphics properties
+    try {
+        runAPIDump();
+    } catch (dumpError) {
+        logToFile("API dump failed: " + dumpError.toString(), 1);
+    }
 } catch (exportError) {
     logToFile("ERROR: Export failed - " + exportError.toString(), 1);
     if (exportError.line) {
