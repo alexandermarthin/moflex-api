@@ -12,6 +12,7 @@ var CONFIG = {
 
 // Include all the necessary modules
 #include "utils.jsx"
+#include "mogrt-parser.jsx"
 #include "shape-processors.jsx"
 #include "mask-processors.jsx"
 #include "property-processors.jsx"
