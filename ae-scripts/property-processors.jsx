@@ -283,232 +283,17 @@ function processRangeSelector(rangeProp) {
 }
 
 // Process Essential Graphics (Motion Graphics Template) data from a composition
-// Uses MOGRT export as primary source for complete metadata (scaling, fonts, etc.)
-// Falls back to essentialPropertySource API if MOGRT extraction fails
+// Uses the documented essentialProperty API by nesting the comp in a temporary wrapper
 function processEssentialGraphics(comp) {
+    var wrapperComp = null;
+    
     try {
-        // Store comp info upfront in case the reference becomes invalid
-        var compId = comp.id;
-        var compName = comp.name;
-        var templateName = comp.motionGraphicsTemplateName;
-        
-        logToFile("Starting Essential Graphics processing for comp: " + compName);
+        logToFile("Starting Essential Graphics processing for comp: " + comp.name);
         
         // Check if this composition has Essential Graphics data
-        if (!templateName || templateName === "") {
+        if (!comp.motionGraphicsTemplateName || comp.motionGraphicsTemplateName === "") {
             return null;
         }
-        
-        // Re-get comp reference by ID to ensure it's valid
-        var getCompById = function(id) {
-            for (var i = 1; i <= app.project.numItems; i++) {
-                var item = app.project.item(i);
-                if (item instanceof CompItem && item.id === id) {
-                    return item;
-                }
-            }
-            return null;
-        };
-        
-        // Try to extract complete data from MOGRT first (primary source)
-        var mogrtData = null;
-        try {
-            mogrtData = extractMOGRTData(comp);
-        } catch (mogrtError) {
-            logToFile("MOGRT extraction failed, will use fallback: " + mogrtError.toString(), 1);
-        }
-        
-        // If MOGRT extraction succeeded and has properties, use it as primary source
-        if (mogrtData && !mogrtData.error && mogrtData.properties && mogrtData.properties.length > 0) {
-            logToFile("Using MOGRT data as primary source. Found " + mogrtData.properties.length + " properties", 1);
-            
-            // Re-get comp reference in case MOGRT export invalidated it
-            var freshComp = getCompById(compId);
-            if (freshComp) {
-                // Enrich MOGRT data with source property info (clipId, propertyPath, keyframes)
-                enrichMOGRTDataWithSourceInfo(freshComp, mogrtData);
-            } else {
-                logToFile("Warning: Could not re-acquire comp reference for enrichment", 1);
-            }
-            
-            return mogrtData;
-        }
-        
-        // Fallback to essentialPropertySource approach if MOGRT failed
-        logToFile("Falling back to essentialPropertySource approach", 1);
-        
-        // Re-get comp reference in case MOGRT export invalidated it
-        var freshComp = getCompById(compId);
-        if (!freshComp) {
-            logToFile("Error: Could not re-acquire comp reference for fallback", 1);
-            return {
-                templateName: templateName,
-                compId: compId,
-                compName: compName,
-                error: "Comp reference became invalid",
-                properties: []
-            };
-        }
-        
-        return processEssentialGraphicsFallback(freshComp);
-        
-    } catch (error) {
-        logToFile("Error processing Essential Graphics: " + error.toString(), 1);
-        return {
-            error: "Failed to process Essential Graphics: " + error.toString()
-        };
-    }
-}
-
-// Enrich MOGRT data with source property info from the composition
-function enrichMOGRTDataWithSourceInfo(comp, mogrtData) {
-    var wrapperComp = null;
-    
-    try {
-        logToFile("Enriching MOGRT data with source info...", 1);
-        
-        // Create temporary wrapper to access essentialProperty
-        wrapperComp = app.project.items.addComp(
-            "_temp_eg_enrich_" + comp.id + "_" + new Date().getTime(),
-            comp.width, comp.height, comp.pixelAspect,
-            comp.duration, comp.frameRate
-        );
-        logToFile("Enrich: Created wrapper comp", 1);
-        
-        var nestedLayer = wrapperComp.layers.add(comp);
-        logToFile("Enrich: Added nested layer", 1);
-        
-        var essentialProps = nestedLayer.essentialProperty;
-        
-        if (!essentialProps || essentialProps.numProperties === 0) {
-            logToFile("Enrich: No essential properties found", 1);
-            return;
-        }
-        
-        logToFile("Enrich: Found " + essentialProps.numProperties + " properties to match", 1);
-        
-        // Match MOGRT properties with source properties by index
-        for (var i = 1; i <= essentialProps.numProperties && i <= mogrtData.properties.length; i++) {
-            try {
-                var egProp = essentialProps.property(i);
-                var mogrtProp = mogrtData.properties[i - 1];
-                
-                if (!egProp) continue;
-                
-                // Get the source property
-                var sourceProp = null;
-                try {
-                    sourceProp = egProp.essentialPropertySource;
-                } catch (e) {
-                    // Source not available
-                }
-                
-                if (sourceProp) {
-                    // Add property path
-                    mogrtProp.propertyPath = getPropertyPath(sourceProp);
-                    
-                    // Add layer info and clipId
-                    var layer = getLayerFromProperty(sourceProp);
-                    if (layer) {
-                        mogrtProp.layerName = layer.name;
-                        if (layer.containingComp) {
-                            mogrtProp.clipId = layer.containingComp.id + "_" + (layer.index - 1);
-                        }
-                    }
-                    
-                    // Add keyframes if the source property is animated
-                    if (sourceProp.isTimeVarying && sourceProp.numKeys > 0) {
-                        mogrtProp.keyframes = extractKeyframesFromProperty(sourceProp);
-                    }
-                    
-                    // Add matchName from source
-                    if (sourceProp.matchName) {
-                        mogrtProp.matchName = sourceProp.matchName;
-                    }
-                }
-                
-            } catch (propError) {
-                logToFile("Error enriching property " + i + ": " + propError.toString());
-            }
-        }
-        
-        logToFile("Enrich: Completed enrichment", 1);
-        
-    } catch (error) {
-        logToFile("Error enriching MOGRT data: " + error.toString(), 1);
-    } finally {
-        if (wrapperComp) {
-            try {
-                wrapperComp.remove();
-                logToFile("Enrich: Removed wrapper comp", 1);
-            } catch (e) {
-                logToFile("Enrich: Could not remove wrapper: " + e.toString(), 1);
-            }
-        }
-    }
-}
-
-// Get the layer from a property by traversing up the property tree
-function getLayerFromProperty(prop) {
-    try {
-        // Check if prop is itself a layer
-        if (prop.matchName && (
-            prop.matchName === "ADBE Text Layer" ||
-            prop.matchName === "ADBE AV Layer" ||
-            prop.matchName === "ADBE Camera Layer" ||
-            prop.matchName === "ADBE Light Layer" ||
-            prop.matchName === "ADBE Vector Layer"
-        )) {
-            return prop;
-        }
-        
-        // Otherwise traverse up using propertyGroup
-        if (prop.propertyDepth) {
-            return prop.propertyGroup(prop.propertyDepth);
-        }
-        
-        return null;
-    } catch (e) {
-        return null;
-    }
-}
-
-// Extract keyframes from a property
-function extractKeyframesFromProperty(property) {
-    var keyframes = [];
-    
-    try {
-        for (var k = 1; k <= property.numKeys; k++) {
-            var keyValue = property.keyValue(k);
-            var inEase = property.keyInTemporalEase(k)[0];
-            var outEase = property.keyOutTemporalEase(k)[0];
-            
-            keyframes.push({
-                time: property.keyTime(k),
-                value: keyValue,
-                easing: {
-                    inType: getInterpolationType(property.keyInInterpolationType(k)),
-                    outType: getInterpolationType(property.keyOutInterpolationType(k)),
-                    inEase: { speed: inEase.speed, influence: inEase.influence },
-                    outEase: { speed: outEase.speed, influence: outEase.influence },
-                    continuous: property.keyTemporalContinuous(k),
-                    autoBezier: property.keyTemporalAutoBezier(k)
-                }
-            });
-        }
-    } catch (e) {
-        logToFile("Error extracting keyframes: " + e.toString());
-    }
-    
-    return keyframes;
-}
-
-// Fallback: Process Essential Graphics using essentialPropertySource API
-function processEssentialGraphicsFallback(comp) {
-    var wrapperComp = null;
-    
-    try {
-        logToFile("Starting fallback Essential Graphics processing", 1);
         
         var egData = {
             templateName: comp.motionGraphicsTemplateName,
@@ -517,78 +302,91 @@ function processEssentialGraphicsFallback(comp) {
             properties: []
         };
         
-        // Create a temporary wrapper composition
+        // Create a temporary wrapper composition to access Essential Properties
+        // When a comp with EG is nested, its exposed properties become accessible
+        // via layer.essentialProperty, and each has essentialPropertySource
         try {
             wrapperComp = app.project.items.addComp(
-                "_temp_eg_fallback_" + comp.id + "_" + new Date().getTime(),
-                comp.width, comp.height, comp.pixelAspect,
-                comp.duration, comp.frameRate
+                "_temp_eg_wrapper_" + comp.id,
+                comp.width,
+                comp.height,
+                comp.pixelAspect,
+                comp.duration,
+                comp.frameRate
             );
-            logToFile("Fallback: Created wrapper comp", 1);
         } catch (createError) {
-            logToFile("Fallback: Could not create wrapper: " + createError.toString(), 1);
             egData.error = "Could not create temporary wrapper comp: " + createError.toString();
             return egData;
         }
         
+        // Add the target comp as a layer in the wrapper
         var nestedLayer = null;
         try {
             nestedLayer = wrapperComp.layers.add(comp);
-            logToFile("Fallback: Added nested layer", 1);
         } catch (addError) {
-            logToFile("Fallback: Could not add layer: " + addError.toString(), 1);
             egData.error = "Could not add comp as layer: " + addError.toString();
-            return egData;
-        }
+                return egData;
+            }
         
+        // Access Essential Properties through the nested layer
         var essentialProps = null;
         try {
             essentialProps = nestedLayer.essentialProperty;
-            logToFile("Fallback: Got essentialProperty group", 1);
         } catch (epError) {
-            logToFile("Fallback: Could not get essentialProperty: " + epError.toString(), 1);
             egData.error = "Could not access essentialProperty: " + epError.toString();
             return egData;
         }
         
         if (!essentialProps || essentialProps.numProperties === 0) {
-            logToFile("Fallback: No properties found", 1);
             egData.error = "Template exists but no exposed properties found";
             return egData;
         }
         
-        logToFile("Fallback: Found " + essentialProps.numProperties + " properties", 1);
+        logToFile("Found " + essentialProps.numProperties + " Essential Graphics properties");
         
+        // Iterate through all exposed properties
         for (var i = 1; i <= essentialProps.numProperties; i++) {
             try {
                 var egProp = essentialProps.property(i);
-                if (!egProp) continue;
                 
+                if (!egProp) {
+                    egData.properties.push({
+                        propertyIndex: i,
+                        error: "Could not access property at index " + i
+                    });
+                    continue;
+                }
+                
+                // Get the property name from the Essential Graphics panel
                 var propertyName = egProp.name;
-                var sourceProp = null;
                 
+                // Get the source property using the documented essentialPropertySource API
+                var sourceProp = null;
                 try {
                     sourceProp = egProp.essentialPropertySource;
                 } catch (sourceError) {
-                    logToFile("Fallback: Could not get source for " + propertyName + ": " + sourceError.toString(), 1);
+                    logToFile("Could not get essentialPropertySource for " + propertyName + ": " + sourceError.toString());
                 }
                 
                 if (sourceProp) {
+                    // Process the actual source property
                     var propData = processEssentialGraphicsPropertyDirect(sourceProp, propertyName, i);
                     if (propData) {
+                        // Add the property path for more accurate targeting
                         propData.propertyPath = getPropertyPath(sourceProp);
                         egData.properties.push(propData);
                     }
-                } else {
-                    egData.properties.push({
+                    } else {
+                    // Fallback: process the essential property itself (without source)
+                        egData.properties.push({
                         name: propertyName,
-                        propertyIndex: i,
+                            propertyIndex: i,
                         error: "Could not get source property"
                     });
                 }
                 
             } catch (propError) {
-                logToFile("Fallback: Error processing property " + i + ": " + propError.toString(), 1);
+                logToFile("Error processing Essential Graphics property " + i + ": " + propError.toString(), 1);
                 egData.properties.push({
                     propertyIndex: i,
                     error: "Failed to process property: " + propError.toString()
@@ -596,26 +394,21 @@ function processEssentialGraphicsFallback(comp) {
             }
         }
         
-        logToFile("Fallback: Completed with " + egData.properties.length + " properties", 1);
         return egData;
         
     } catch (error) {
-        logToFile("Fallback: Unexpected error: " + error.toString(), 1);
+        logToFile("Error processing Essential Graphics: " + error.toString(), 1);
         return {
-            templateName: comp.motionGraphicsTemplateName,
-            compId: comp.id,
-            compName: comp.name,
-            error: "Fallback processing failed: " + error.toString(),
-            properties: []
+            error: "Failed to process Essential Graphics: " + error.toString()
         };
     } finally {
+        // Always clean up the temporary wrapper composition
         if (wrapperComp) {
             try {
                 wrapperComp.remove();
-                logToFile("Fallback: Removed wrapper comp", 1);
-            } catch (e) {
-                logToFile("Fallback: Could not remove wrapper: " + e.toString(), 1);
-            }
+            } catch (removeError) {
+                logToFile("Warning: Could not remove temporary wrapper comp: " + removeError.toString(), 1);
+        }
         }
     }
 }

@@ -88,31 +88,6 @@ try {
     };
 }
 
-// JSON.parse polyfill for ExtendScript
-var jsonParse;
-try {
-    // Test if native JSON.parse works
-    var testJson = '{"test":"value"}';
-    var testResult = JSON.parse(testJson);
-    if (testResult && testResult.test === "value") {
-        jsonParse = JSON.parse;
-    } else {
-        throw new Error("Native JSON.parse test failed");
-    }
-} catch (e) {
-    // Polyfill implementation
-    jsonParse = function(jsonString) {
-        try {
-            // Use eval with parentheses to parse JSON
-            // This is safe for known JSON from MOGRT files
-            return eval("(" + jsonString + ")");
-        } catch (parseError) {
-            logToFile("JSON parse error: " + parseError.toString(), 1);
-            return null;
-        }
-    };
-}
-
 // Helper function to log to file instead of console
 // level: 1 = errors/milestones (always shown), 2 = verbose debug
 function logToFile(message, level) {
