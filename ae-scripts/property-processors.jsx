@@ -283,7 +283,10 @@ function processRangeSelector(rangeProp) {
 }
 
 // Process Essential Graphics (Motion Graphics Template) data from a composition
+// Uses the documented essentialProperty API by nesting the comp in a temporary wrapper
 function processEssentialGraphics(comp) {
+    var wrapperComp = null;
+    
     try {
         logToFile("Starting Essential Graphics processing for comp: " + comp.name);
         
@@ -299,106 +302,91 @@ function processEssentialGraphics(comp) {
             properties: []
         };
         
-        // Get the number of exposed properties
-        var controllerCount = 0;
+        // Create a temporary wrapper composition to access Essential Properties
+        // When a comp with EG is nested, its exposed properties become accessible
+        // via layer.essentialProperty, and each has essentialPropertySource
         try {
-            if (typeof comp.motionGraphicsTemplateControllerCount !== "undefined") {
-                controllerCount = comp.motionGraphicsTemplateControllerCount;
-            } else {
-                egData.error = "Essential Graphics API not fully available in this After Effects version";
-                return egData;
-            }
-        } catch (e) {
-            egData.error = "Could not access Essential Graphics controller count: " + e.toString();
+            wrapperComp = app.project.items.addComp(
+                "_temp_eg_wrapper_" + comp.id,
+                comp.width,
+                comp.height,
+                comp.pixelAspect,
+                comp.duration,
+                comp.frameRate
+            );
+        } catch (createError) {
+            egData.error = "Could not create temporary wrapper comp: " + createError.toString();
             return egData;
         }
         
-        if (controllerCount === 0) {
+        // Add the target comp as a layer in the wrapper
+        var nestedLayer = null;
+        try {
+            nestedLayer = wrapperComp.layers.add(comp);
+        } catch (addError) {
+            egData.error = "Could not add comp as layer: " + addError.toString();
+                return egData;
+            }
+        
+        // Access Essential Properties through the nested layer
+        var essentialProps = null;
+        try {
+            essentialProps = nestedLayer.essentialProperty;
+        } catch (epError) {
+            egData.error = "Could not access essentialProperty: " + epError.toString();
+            return egData;
+        }
+        
+        if (!essentialProps || essentialProps.numProperties === 0) {
             egData.error = "Template exists but no exposed properties found";
             return egData;
         }
         
-        // Build a map of all properties that are in Essential Graphics
-        var egPropertiesMap = buildEssentialGraphicsMap(comp, controllerCount);
+        logToFile("Found " + essentialProps.numProperties + " Essential Graphics properties");
         
-        // Check if the documented API method exists
-        var hasGetName = typeof comp.getMotionGraphicsTemplateControllerName === "function";
-        
-        // Process each exposed property using the documented API
-        for (var i = 1; i <= controllerCount; i++) {
+        // Iterate through all exposed properties
+        for (var i = 1; i <= essentialProps.numProperties; i++) {
             try {
-                var controllerName = null;
+                var egProp = essentialProps.property(i);
                 
-                if (hasGetName) {
-                    try {
-                        controllerName = comp.getMotionGraphicsTemplateControllerName(i);
-                    } catch (nameError) {
-                        // Name retrieval failed
-                    }
-                }
-                
-                if (!controllerName) {
+                if (!egProp) {
                     egData.properties.push({
                         propertyIndex: i,
-                        error: "Could not retrieve property name"
+                        error: "Could not access property at index " + i
                     });
                     continue;
                 }
                 
-                // Find the property in our map by controller index or name
-                var foundPropertyInfo = null;
+                // Get the property name from the Essential Graphics panel
+                var propertyName = egProp.name;
                 
-                for (var m = 0; m < egPropertiesMap.length; m++) {
-                    if (egPropertiesMap[m].controllerIndex === i) {
-                        foundPropertyInfo = egPropertiesMap[m];
-                        break;
-                    }
+                // Get the source property using the documented essentialPropertySource API
+                var sourceProp = null;
+                try {
+                    sourceProp = egProp.essentialPropertySource;
+                } catch (sourceError) {
+                    logToFile("Could not get essentialPropertySource for " + propertyName + ": " + sourceError.toString());
                 }
                 
-                if (!foundPropertyInfo) {
-                    for (var m = 0; m < egPropertiesMap.length; m++) {
-                        if (egPropertiesMap[m].controllerName === controllerName || 
-                            egPropertiesMap[m].layerName === controllerName) {
-                            foundPropertyInfo = egPropertiesMap[m];
-                            break;
-                        }
+                if (sourceProp) {
+                    // Process the actual source property
+                    var propData = processEssentialGraphicsPropertyDirect(sourceProp, propertyName, i);
+                    if (propData) {
+                        // Add the property path for more accurate targeting
+                        propData.propertyPath = getPropertyPath(sourceProp);
+                        egData.properties.push(propData);
                     }
-                }
-                
-                if (!foundPropertyInfo) {
-                    // Fallback: try to find layer by name directly
-                    var directLayer = findPropertyByName(comp, controllerName);
-                    if (directLayer) {
-                        foundPropertyInfo = {
-                            property: directLayer,
-                            layerName: directLayer.name,
-                            propertyName: directLayer.name
-                        };
-                    } else if (i <= comp.numLayers) {
-                        // Last resort: map controller index to layer index
-                        var fallbackLayer = comp.layer(i);
-                        foundPropertyInfo = {
-                            property: fallbackLayer,
-                            layerName: fallbackLayer.name,
-                            propertyName: fallbackLayer.name
-                        };
                     } else {
+                    // Fallback: process the essential property itself (without source)
                         egData.properties.push({
-                            name: controllerName,
+                        name: propertyName,
                             propertyIndex: i,
-                            error: "Property not found in composition"
-                        });
-                        continue;
-                    }
-                }
-                
-                var propData = processEssentialGraphicsPropertyDirect(foundPropertyInfo.property, controllerName, i);
-                if (propData) {
-                    egData.properties.push(propData);
+                        error: "Could not get source property"
+                    });
                 }
                 
             } catch (propError) {
-                logToFile("Error processing Essential Graphics property: " + propError.toString(), 1);
+                logToFile("Error processing Essential Graphics property " + i + ": " + propError.toString(), 1);
                 egData.properties.push({
                     propertyIndex: i,
                     error: "Failed to process property: " + propError.toString()
@@ -413,138 +401,35 @@ function processEssentialGraphics(comp) {
         return {
             error: "Failed to process Essential Graphics: " + error.toString()
         };
-    }
-}
-
-// Build a map of all properties that are in Essential Graphics
-function buildEssentialGraphicsMap(comp, controllerCount) {
-    var egMap = [];
-    
-    try {
-        var hasGetController = typeof comp.getMotionGraphicsControllerForProperty === "function";
-        if (!hasGetController) {
-            return egMap;
-        }
-        
-        for (var layerIndex = 1; layerIndex <= comp.numLayers; layerIndex++) {
-            var layer = comp.layer(layerIndex);
-            
-            // Check the layer itself
+    } finally {
+        // Always clean up the temporary wrapper composition
+        if (wrapperComp) {
             try {
-                var layerController = comp.getMotionGraphicsControllerForProperty(layer);
-                if (layerController > 0) {
-                    egMap.push({
-                        controllerIndex: layerController,
-                        property: layer,
-                        layerName: layer.name,
-                        propertyName: layer.name
-                    });
-                }
-            } catch (e) {
-                // Layer not in Essential Graphics
-            }
-            
-            // Check all properties in the layer recursively
-            checkPropertyGroupForEG(comp, layer, layer.name, egMap);
+                wrapperComp.remove();
+            } catch (removeError) {
+                logToFile("Warning: Could not remove temporary wrapper comp: " + removeError.toString(), 1);
         }
-    } catch (error) {
-        // Map building failed
+        }
     }
-    
-    return egMap;
 }
 
-// Recursively check properties in a group for Essential Graphics membership
-function checkPropertyGroupForEG(comp, propGroup, layerName, egMap) {
-    try {
-        if (!propGroup.numProperties) return;
-        
-        for (var i = 1; i <= propGroup.numProperties; i++) {
-            try {
-                var prop = propGroup.property(i);
-                
+// Get the full property path from a property to its layer
+function getPropertyPath(prop) {
+    var path = [];
                 try {
-                    var controllerIndex = comp.getMotionGraphicsControllerForProperty(prop);
-                    if (controllerIndex > 0) {
-                        egMap.push({
-                            controllerIndex: controllerIndex,
-                            property: prop,
-                            layerName: layerName,
-                            propertyName: prop.name
-                        });
-                    }
-                } catch (e) {
-                    // Property not in Essential Graphics
-                }
-                
-                if (prop.propertyType === PropertyType.INDEXED_GROUP || 
-                    prop.propertyType === PropertyType.NAMED_GROUP) {
-                    checkPropertyGroupForEG(comp, prop, layerName, egMap);
-                }
-            } catch (e) {
-                // Skip inaccessible properties
+        var current = prop;
+        while (current && current.name) {
+            path.unshift(current.name);
+            // Stop if we've reached a layer (no more parentProperty)
+            if (!current.parentProperty) {
+                break;
             }
-        }
+            current = current.parentProperty;
+            }
     } catch (e) {
-        // Group check failed
+        // Path extraction failed, return what we have
     }
-}
-
-// Helper function to find a property by name in a composition
-function findPropertyByName(comp, propertyName) {
-    try {
-        for (var layerIndex = 1; layerIndex <= comp.numLayers; layerIndex++) {
-            var layer = comp.layer(layerIndex);
-            var foundProp = searchPropertyInGroup(layer, propertyName);
-            if (foundProp) {
-                return foundProp;
-            }
-        }
-        return null;
-    } catch (e) {
-        return null;
-    }
-}
-
-// Recursively search for a property by name in a property group
-function searchPropertyInGroup(propGroup, targetName) {
-    try {
-        // Check if this property group itself matches
-        if (propGroup.name === targetName) {
-            return propGroup;
-        }
-        
-        // Search through all properties in this group
-        if (propGroup.numProperties) {
-            for (var i = 1; i <= propGroup.numProperties; i++) {
-                try {
-                    var prop = propGroup.property(i);
-                    
-                    // Check if this property matches
-                    if (prop.name === targetName) {
-                        return prop;
-                    }
-                    
-                    // If it's a group, search recursively
-                    if (prop.propertyType === PropertyType.INDEXED_GROUP || 
-                        prop.propertyType === PropertyType.NAMED_GROUP) {
-                        var foundProp = searchPropertyInGroup(prop, targetName);
-                        if (foundProp) {
-                            return foundProp;
-                        }
-                    }
-                } catch (propError) {
-                    // Skip properties that can't be accessed
-                    continue;
-                }
-            }
-        }
-        
-        return null;
-        
-    } catch (error) {
-        return null;
-    }
+    return path;
 }
 
 // Process Essential Graphics property directly from the property object
@@ -616,16 +501,31 @@ function processEssentialGraphicsPropertyDirect(property, propertyName, index) {
                 propData.value = null;
             }
         } else {
-            try {
-                propData.value = getPropertyValue(property);
-            } catch (e) {
-                propData.value = null;
-            }
-            
+            // Determine property type first
             try {
                 propData.propertyType = determinePropertyType(property);
             } catch (e) {
                 propData.propertyType = "unknown";
+            }
+            
+            // Handle text properties specially - don't store the TextDocument object directly
+            if (propData.propertyType === "text" || property.propertyValueType === PropertyValueType.TEXT_DOCUMENT) {
+                try {
+                    var textDoc = property.value;
+                    if (textDoc && textDoc.text !== undefined) {
+                        propData.value = textDoc.text;
+                    } else {
+                        propData.value = null;
+                    }
+                } catch (e) {
+                    propData.value = null;
+                }
+            } else {
+                try {
+                    propData.value = getPropertyValue(property);
+                } catch (e) {
+                    propData.value = null;
+                }
             }
         }
         
