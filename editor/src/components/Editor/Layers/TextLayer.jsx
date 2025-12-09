@@ -117,7 +117,7 @@ const TextLayer = ({ id, clip, updatePropertyValue, setSelectedClipId, selectedC
                     <group onClick={handleClick} className="cursor-pointer" scale={[1, -1, 1]}>
                         <Text
                             color={color}
-                            font={"/fonts/" + clip.text.font + ".otf"}
+                            font={"/fonts/" + clip.text.font + ".ttf"}
                             fontSize={clip.text.fontSize}
                             anchorX={anchorXString}
                             anchorY="middle"

@@ -26,6 +26,27 @@ export const useProjectStore = create((set, get) => ({
 
         set({ editableFields: newFields });
     },
+
+    // Update multiple editable fields by their titles
+    // Usage: updateByTitles({ "headline": "new text", "subtitle": "new subtitle" })
+    updateByTitles: (updates) => {
+        const { editableFields, setValue } = get();
+
+        const results = { success: [], failed: [] };
+
+        Object.entries(updates).forEach(([title, newValue]) => {
+            const field = Object.values(editableFields).find((f) => f.title === title);
+            if (field) {
+                setValue(field.path, newValue);
+                results.success.push(title);
+            } else {
+                console.warn(`No editable field found with title: ${title}`);
+                results.failed.push(title);
+            }
+        });
+
+        return results;
+    },
     setEditableField: (path, title, type) => {
         const { editableFields } = get();
         const pathKey = Array.isArray(path) ? path.join(".") : path;
