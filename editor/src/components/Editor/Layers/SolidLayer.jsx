@@ -3,6 +3,8 @@ import { getValueAtTime } from "@/lib/anim-utils";
 import { getTransform } from "@/lib/layer-utils";
 import { PivotControls } from "@react-three/drei";
 import { useState } from "react";
+import MaskedLayer from "@/components/Editor/Layers/MaskedLayer";
+import LayerMask from "@/components/Editor/Layers/LayerMask";
 
 const SolidLayer = ({ id, clip, solidItem, updatePropertyValue, setSelectedClipId, selectedClipId, time, parentClip }) => {
     const opacity = clip.properties["Opacity"].keyframes.length > 0 ? getValueAtTime(clip.properties["Opacity"], time) / 100 : clip.properties["Opacity"].value / 100;
@@ -12,6 +14,8 @@ const SolidLayer = ({ id, clip, solidItem, updatePropertyValue, setSelectedClipI
 
     const { anchorPoint, position, scale, rotation, relativePosition, relativeScale, relativeRotation } = getTransform(clip, time);
     const { width, height } = solidItem;
+
+    const hasMasks = (clip?.masks && clip.masks.length > 0) || clip?.properties?.["Mask Path"]?.keyframes?.length > 0;
 
     // Initialize local state with current relative values from store
     const [localRelativePosition, setLocalRelativePosition] = useState([relativePosition.x, relativePosition.y, relativePosition.z]);
@@ -113,10 +117,19 @@ const SolidLayer = ({ id, clip, solidItem, updatePropertyValue, setSelectedClipI
                     }}
                     onDragEnd={handleDragEnd}
                 >
-                    <mesh position={[width / 2, height / 2, 0]} onClick={handleClick}>
-                        <planeGeometry args={[width, height]} />
-                        <meshBasicMaterial color={color} side={THREE.DoubleSide} opacity={opacity} transparent={opacity < 1} />
-                    </mesh>
+                    {hasMasks ? (
+                        <MaskedLayer width={width} height={height} mode="alpha" invert={false} mask={<LayerMask width={width} height={height} clip={clip} time={time} />}>
+                            <mesh position={[width / 2, height / 2, 0]} onClick={handleClick}>
+                                <planeGeometry args={[width, height]} />
+                                <meshBasicMaterial color={color} side={THREE.DoubleSide} opacity={opacity} transparent />
+                            </mesh>
+                        </MaskedLayer>
+                    ) : (
+                        <mesh position={[width / 2, height / 2, 0]} onClick={handleClick}>
+                            <planeGeometry args={[width, height]} />
+                            <meshBasicMaterial color={color} side={THREE.DoubleSide} opacity={opacity} transparent={opacity < 1} />
+                        </mesh>
+                    )}
                 </PivotControls>
             </group>
         </group>

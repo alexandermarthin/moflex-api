@@ -21,9 +21,9 @@ export function getTransform(clip, time) {
             z: keyframeOrValue("Z Position"),
         },
         scale: {
-            x: (keyframeOrValue("X Scale") || 100) / 100,
-            y: (keyframeOrValue("Y Scale") || 100) / 100,
-            z: (keyframeOrValue("Z Scale") || 100) / 100,
+            x: (keyframeOrValue("X Scale") ?? 100) / 100,
+            y: (keyframeOrValue("Y Scale") ?? 100) / 100,
+            z: (keyframeOrValue("Z Scale") ?? 100) / 100,
         },
         rotation: {
             x: keyframeOrValue("X Rotation"),
