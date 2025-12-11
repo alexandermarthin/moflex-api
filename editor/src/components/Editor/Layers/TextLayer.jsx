@@ -6,7 +6,7 @@ import { PivotControls } from "@react-three/drei";
 import { useState } from "react";
 
 const TextLayer = ({ id, clip, updatePropertyValue, setSelectedClipId, selectedClipId, time, parentClip }) => {
-    const opacity = clip.properties["Opacity"].keyframes.length > 0 ? getValueAtTime(clip.properties["Opacity"], time) : clip.properties["Opacity"].value;
+    const opacity = clip.properties["Opacity"].keyframes.length > 0 ? getValueAtTime(clip.properties["Opacity"], time) / 100 : clip.properties["Opacity"].value / 100;
 
     const color = new THREE.Color(clip.text.fillColor[0], clip.text.fillColor[1], clip.text.fillColor[2]);
     color.convertSRGBToLinear();
@@ -120,7 +120,7 @@ const TextLayer = ({ id, clip, updatePropertyValue, setSelectedClipId, selectedC
                             font={"/fonts/" + clip.text.font + ".ttf"}
                             fontSize={clip.text.fontSize}
                             anchorX={anchorXString}
-                            anchorY="middle"
+                            anchorY="bottom-baseline"
                             outlineWidth={clip.text.applyStroke ? clip.text.strokeWidth : 0}
                             outlineColor={clip.text.strokeColor ? new THREE.Color(...clip.text.strokeColor) : "#000000"}
                             fillOpacity={opacity}

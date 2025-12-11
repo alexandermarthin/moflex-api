@@ -1,1 +1,399 @@
-{"projectName":"Mask.aep","assets":{"2":{"id":2,"name":"Comp 1","type":"composition","parentId":0,"width":1920,"height":1080,"duration":4,"frameRate":25,"backgroundColor":{"red":0,"green":0,"blue":0},"clipIds":["2_0","2_1","2_2"]},"14":{"id":14,"name":"Solids","type":"folder","parentId":0},"15":{"id":15,"name":"Light Gray Solid 1","parentId":14,"width":1920,"height":1080,"duration":0,"frameRate":0,"file":"","url":"","isStill":true,"isSolid":true,"type":"solid","solidColor":{"red":0.50001502037048,"green":0.50001502037048,"blue":0.50001502037048}},"17":{"id":17,"name":"Medium Red Solid 1","parentId":14,"width":1920,"height":1080,"duration":0,"frameRate":0,"file":"","url":"","isStill":true,"isSolid":true,"type":"solid","solidColor":{"red":0.95588237047195,"green":0.02016312070191,"blue":0.06660498678684}}},"clips":{"2_0":{"id":"2_0","parentId":2,"parentLayerId":null,"clipName":"Shape Layer 1","index":1,"inPoint":0,"outPoint":4,"startTime":0,"enabled":true,"audioEnabled":true,"hasAudio":false,"audioLevel":[0,0],"isThreeD":false,"effects":[],"properties":{"X Anchor Point":{"name":"X Anchor Point","propertyIndex":1,"value":0,"keyframes":[]},"Y Anchor Point":{"name":"Y Anchor Point","propertyIndex":1,"value":0,"keyframes":[]},"Z Anchor Point":{"name":"Z Anchor Point","propertyIndex":1,"value":0,"keyframes":[]},"X Position":{"name":"X Position","propertyIndex":2,"value":885.479854277762,"keyframes":[{"time":0,"value":960,"easing":{"inType":"LINEAR","outType":"LINEAR","inEase":{"speed":0,"influence":16.666666667},"outEase":{"speed":81,"influence":16.666666667},"continuous":false,"autoBezier":false}},{"time":2,"value":798,"easing":{"inType":"LINEAR","outType":"LINEAR","inEase":{"speed":81,"influence":16.666666667},"outEase":{"speed":82.6530612244898,"influence":16.666666667},"continuous":false,"autoBezier":false}},{"time":3.96,"value":960,"easing":{"inType":"LINEAR","outType":"LINEAR","inEase":{"speed":82.6530612244898,"influence":16.666666667},"outEase":{"speed":0,"influence":16.666666667},"continuous":false,"autoBezier":false}}]},"Y Position":{"name":"Y Position","propertyIndex":2,"value":540,"keyframes":[{"time":0,"value":540,"easing":{"inType":"LINEAR","outType":"LINEAR","inEase":{"speed":0,"influence":16.666666667},"outEase":{"speed":81,"influence":16.666666667},"continuous":false,"autoBezier":false}},{"time":2,"value":540,"easing":{"inType":"LINEAR","outType":"LINEAR","inEase":{"speed":81,"influence":16.666666667},"outEase":{"speed":82.6530612244898,"influence":16.666666667},"continuous":false,"autoBezier":false}},{"time":3.96,"value":540,"easing":{"inType":"LINEAR","outType":"LINEAR","inEase":{"speed":82.6530612244898,"influence":16.666666667},"outEase":{"speed":0,"influence":16.666666667},"continuous":false,"autoBezier":false}}]},"Z Position":{"name":"Z Position","propertyIndex":2,"value":0,"keyframes":[{"time":0,"value":0,"easing":{"inType":"LINEAR","outType":"LINEAR","inEase":{"speed":0,"influence":16.666666667},"outEase":{"speed":81,"influence":16.666666667},"continuous":false,"autoBezier":false}},{"time":2,"value":0,"easing":{"inType":"LINEAR","outType":"LINEAR","inEase":{"speed":81,"influence":16.666666667},"outEase":{"speed":82.6530612244898,"influence":16.666666667},"continuous":false,"autoBezier":false}},{"time":3.96,"value":0,"easing":{"inType":"LINEAR","outType":"LINEAR","inEase":{"speed":82.6530612244898,"influence":16.666666667},"outEase":{"speed":0,"influence":16.666666667},"continuous":false,"autoBezier":false}}]},"X Scale":{"name":"X Scale","propertyIndex":6,"value":100,"keyframes":[]},"Y Scale":{"name":"Y Scale","propertyIndex":6,"value":100,"keyframes":[]},"Z Scale":{"name":"Z Scale","propertyIndex":6,"value":100,"keyframes":[]},"X Orientation":{"name":"X Orientation","propertyIndex":7,"value":0,"keyframes":[]},"Y Orientation":{"name":"Y Orientation","propertyIndex":7,"value":0,"keyframes":[]},"Z Orientation":{"name":"Z Orientation","propertyIndex":7,"value":0,"keyframes":[]},"X Rotation":{"name":"X Rotation","propertyIndex":8,"value":0,"keyframes":[]},"Y Rotation":{"name":"Y Rotation","propertyIndex":9,"value":0,"keyframes":[]},"Z Rotation":{"name":"Rotation","propertyIndex":10,"value":0,"keyframes":[]},"Opacity":{"name":"Opacity","propertyIndex":11,"value":100,"keyframes":[]}},"blendingModeEnum":5212,"blendMode":"normal","layerType":"shape","shapeContents":{"contents":[{"name":"Shape 1","matchName":"ADBE Vector Group","type":"group","contents":[{"name":"Blend Mode","type":"property","property":{"name":"Blend Mode","propertyIndex":1,"value":1,"keyframes":[]}},{"name":"Contents","matchName":"ADBE Vectors Group","type":"group","contents":[{"name":"Path 1","matchName":"ADBE Vector Shape - Group","type":"path","properties":{},"pathData":{"Shape Direction":{"name":"Shape Direction","propertyIndex":1,"value":1,"keyframes":[]},"Path":{"name":"Path","propertyIndex":2,"value":{"closed":true,"featherInterps":[],"featherRadii":[],"featherRelCornerAngles":[],"featherRelSegLocs":[],"featherSegLocs":[],"featherTensions":[],"featherTypes":[],"inTangents":[[26,-26],[72,-12],[-90,-2],[-76,66.0000305175781],[36,36]],"outTangents":[[-26,26],[-72,12.0000305175781],[90,2],[76,-66.0000305175781],[-36,-36]],"vertices":[[492,-12],[352,116],[394,288],[654,201.999969482422],[652,88]]},"keyframes":[]}}},{"name":"Stroke 1","matchName":"ADBE Vector Graphic - Stroke","type":"stroke","properties":{},"strokeData":{"enabled":false,"properties":{"Blend Mode":{"name":"Blend Mode","propertyIndex":1,"value":1,"keyframes":[]},"Composite":{"name":"Composite","propertyIndex":2,"value":1,"keyframes":[]},"Color":{"name":"Color","propertyIndex":3,"value":[1,1,1,1],"keyframes":[]},"Opacity":{"name":"Opacity","propertyIndex":4,"value":100,"keyframes":[]},"Stroke Width":{"name":"Stroke Width","propertyIndex":5,"value":2,"keyframes":[]},"Line Cap":{"name":"Line Cap","propertyIndex":6,"value":1,"keyframes":[]},"Line Join":{"name":"Line Join","propertyIndex":7,"value":1,"keyframes":[]},"Miter Limit":{"name":"Miter Limit","propertyIndex":8,"value":4,"keyframes":[]}}}},{"name":"Fill 1","matchName":"ADBE Vector Graphic - Fill","type":"fill","properties":{},"fillData":{"enabled":true,"properties":{"Blend Mode":{"name":"Blend Mode","propertyIndex":1,"value":1,"keyframes":[]},"Composite":{"name":"Composite","propertyIndex":2,"value":1,"keyframes":[]},"Fill Rule":{"name":"Fill Rule","propertyIndex":3,"value":1,"keyframes":[]},"Color":{"name":"Color","propertyIndex":4,"value":[0.8253480200674,0.74389600566789,0.46826198802275,1],"keyframes":[]},"Opacity":{"name":"Opacity","propertyIndex":5,"value":100,"keyframes":[]}}}}]},{"name":"Transform","type":"unknown","propertyType":6213,"matchName":"ADBE Vector Transform Group"},{"name":"Material Options","type":"unknown","propertyType":6213,"matchName":"ADBE Vector Materials Group"}]}]},"masks":[],"trackMatte":null},"2_1":{"id":"2_1","parentId":2,"parentLayerId":null,"clipName":"Medium Red Solid 1","index":2,"inPoint":0,"outPoint":4,"startTime":0,"enabled":true,"audioEnabled":true,"hasAudio":false,"audioLevel":[0,0],"isThreeD":false,"effects":[],"properties":{"X Anchor Point":{"name":"X Anchor Point","propertyIndex":1,"value":960,"keyframes":[]},"Y Anchor Point":{"name":"Y Anchor Point","propertyIndex":1,"value":540,"keyframes":[]},"Z Anchor Point":{"name":"Z Anchor Point","propertyIndex":1,"value":0,"keyframes":[]},"X Position":{"name":"X Position","propertyIndex":2,"value":885.479854277762,"keyframes":[{"time":0,"value":960,"easing":{"inType":"LINEAR","outType":"LINEAR","inEase":{"speed":0,"influence":16.666666667},"outEase":{"speed":81,"influence":16.666666667},"continuous":false,"autoBezier":false}},{"time":2,"value":798,"easing":{"inType":"LINEAR","outType":"LINEAR","inEase":{"speed":81,"influence":16.666666667},"outEase":{"speed":82.6530612244898,"influence":16.666666667},"continuous":false,"autoBezier":false}},{"time":3.96,"value":960,"easing":{"inType":"LINEAR","outType":"LINEAR","inEase":{"speed":82.6530612244898,"influence":16.666666667},"outEase":{"speed":0,"influence":16.666666667},"continuous":false,"autoBezier":false}}]},"Y Position":{"name":"Y Position","propertyIndex":2,"value":540,"keyframes":[{"time":0,"value":540,"easing":{"inType":"LINEAR","outType":"LINEAR","inEase":{"speed":0,"influence":16.666666667},"outEase":{"speed":81,"influence":16.666666667},"continuous":false,"autoBezier":false}},{"time":2,"value":540,"easing":{"inType":"LINEAR","outType":"LINEAR","inEase":{"speed":81,"influence":16.666666667},"outEase":{"speed":82.6530612244898,"influence":16.666666667},"continuous":false,"autoBezier":false}},{"time":3.96,"value":540,"easing":{"inType":"LINEAR","outType":"LINEAR","inEase":{"speed":82.6530612244898,"influence":16.666666667},"outEase":{"speed":0,"influence":16.666666667},"continuous":false,"autoBezier":false}}]},"Z Position":{"name":"Z Position","propertyIndex":2,"value":0,"keyframes":[{"time":0,"value":0,"easing":{"inType":"LINEAR","outType":"LINEAR","inEase":{"speed":0,"influence":16.666666667},"outEase":{"speed":81,"influence":16.666666667},"continuous":false,"autoBezier":false}},{"time":2,"value":0,"easing":{"inType":"LINEAR","outType":"LINEAR","inEase":{"speed":81,"influence":16.666666667},"outEase":{"speed":82.6530612244898,"influence":16.666666667},"continuous":false,"autoBezier":false}},{"time":3.96,"value":0,"easing":{"inType":"LINEAR","outType":"LINEAR","inEase":{"speed":82.6530612244898,"influence":16.666666667},"outEase":{"speed":0,"influence":16.666666667},"continuous":false,"autoBezier":false}}]},"X Scale":{"name":"X Scale","propertyIndex":6,"value":100,"keyframes":[]},"Y Scale":{"name":"Y Scale","propertyIndex":6,"value":100,"keyframes":[]},"Z Scale":{"name":"Z Scale","propertyIndex":6,"value":100,"keyframes":[]},"X Orientation":{"name":"X Orientation","propertyIndex":7,"value":0,"keyframes":[]},"Y Orientation":{"name":"Y Orientation","propertyIndex":7,"value":0,"keyframes":[]},"Z Orientation":{"name":"Z Orientation","propertyIndex":7,"value":0,"keyframes":[]},"X Rotation":{"name":"X Rotation","propertyIndex":8,"value":0,"keyframes":[]},"Y Rotation":{"name":"Y Rotation","propertyIndex":9,"value":0,"keyframes":[]},"Z Rotation":{"name":"Rotation","propertyIndex":10,"value":0,"keyframes":[]},"Opacity":{"name":"Opacity","propertyIndex":11,"value":100,"keyframes":[]}},"blendingModeEnum":5212,"blendMode":"normal","sourceId":17,"layerType":"solid","masks":[{"name":"Mask 1","index":1,"inverted":false,"maskPath":{"closed":true,"vertices":[[1024,250],[728,443.999938964844],[412,320],[400,544],[588,652],[866,626.000061035156],[1246,549.999938964844]],"inTangents":[[50,12],[58,-13.9999694824219],[38,-24],[-34,-34],[-76,12],[-54,-24.0000610351562],[-60,88.0001220703125]],"outTangents":[[-50,-12],[-58,13.9999694824219],[-38,24],[34,34],[76,-12],[54,24.0000610351562],[60,-88.0001525878906]]},"maskFeather":[0,0],"maskOpacity":100,"maskExpansion":0,"keyframes":{}}],"trackMatte":null},"2_2":{"id":"2_2","parentId":2,"parentLayerId":null,"clipName":"Light Gray Solid 1","index":3,"inPoint":0,"outPoint":4,"startTime":0,"enabled":true,"audioEnabled":true,"hasAudio":false,"audioLevel":[0,0],"isThreeD":false,"effects":[],"properties":{"X Anchor Point":{"name":"X Anchor Point","propertyIndex":1,"value":960,"keyframes":[]},"Y Anchor Point":{"name":"Y Anchor Point","propertyIndex":1,"value":540,"keyframes":[]},"Z Anchor Point":{"name":"Z Anchor Point","propertyIndex":1,"value":0,"keyframes":[]},"X Position":{"name":"X Position","propertyIndex":2,"value":960,"keyframes":[]},"Y Position":{"name":"Y Position","propertyIndex":2,"value":540,"keyframes":[]},"Z Position":{"name":"Z Position","propertyIndex":2,"value":0,"keyframes":[]},"X Scale":{"name":"X Scale","propertyIndex":6,"value":100,"keyframes":[]},"Y Scale":{"name":"Y Scale","propertyIndex":6,"value":100,"keyframes":[]},"Z Scale":{"name":"Z Scale","propertyIndex":6,"value":100,"keyframes":[]},"X Orientation":{"name":"X Orientation","propertyIndex":7,"value":0,"keyframes":[]},"Y Orientation":{"name":"Y Orientation","propertyIndex":7,"value":0,"keyframes":[]},"Z Orientation":{"name":"Z Orientation","propertyIndex":7,"value":0,"keyframes":[]},"X Rotation":{"name":"X Rotation","propertyIndex":8,"value":0,"keyframes":[]},"Y Rotation":{"name":"Y Rotation","propertyIndex":9,"value":0,"keyframes":[]},"Z Rotation":{"name":"Rotation","propertyIndex":10,"value":0,"keyframes":[]},"Opacity":{"name":"Opacity","propertyIndex":11,"value":100,"keyframes":[]}},"blendingModeEnum":5212,"blendMode":"normal","sourceId":15,"layerType":"solid","masks":[],"trackMatte":null}},"activeCompId":2,"essentialGraphics":{"templateName":"Untitled","compId":2,"compName":"Comp 1","properties":[],"error":"Template exists but no exposed properties found"}}
+{"projectName":"text.aep","assets":{"40":{"id":40,"name":"Solids","type":"folder","parentId":0},"41":{"id":41,"name":"Adjustment Layer 1","parentId":40,"width":1920,"height":1080,"duration":0,"frameRate":0,"file":"","url":"","isStill":true,"isSolid":true,"type":"solid","solidColor":{"red":1,"green":1,"blue":1}},"102":{"id":102,"name":"Black Solid 1","parentId":40,"width":1920,"height":1080,"duration":0,"frameRate":0,"file":"","url":"","isStill":true,"isSolid":true,"type":"solid","solidColor":{"red":0,"green":0,"blue":0}},"71":{"id":71,"name":"Red Solid 1","parentId":40,"width":1080,"height":1080,"duration":0,"frameRate":0,"file":"","url":"","isStill":true,"isSolid":true,"type":"solid","solidColor":{"red":1,"green":0,"blue":0}},"324":{"id":324,"name":"White Solid 1","parentId":40,"width":1080,"height":1080,"duration":0,"frameRate":0,"file":"","url":"","isStill":true,"isSolid":true,"type":"solid","solidColor":{"red":1,"green":1,"blue":1}},"1":{"id":1,"name":"Comp 1","type":"composition","parentId":0,"width":1920,"height":1080,"duration":3,"frameRate":25,"backgroundColor":{"red":0,"green":0,"blue":0},"clipIds":["1_0","1_1","1_2","1_3","1_4","1_5","1_6","1_7","1_8","1_9","1_10"]},"43":{"id":43,"name":"Correct.png","parentId":0,"width":1920,"height":1080,"duration":0,"frameRate":0,"file":"/Users/lumafilm/Documents/code/moflex-api/editor/public/templates/template1/Correct.png","url":"Correct.png","isStill":true,"isSolid":false,"type":"image"},"74":{"id":74,"name":"Correct-dot.png","parentId":0,"width":1920,"height":1080,"duration":0,"frameRate":0,"file":"/Users/lumafilm/Documents/code/moflex-api/editor/public/templates/template1/Correct-dot.png","url":"Correct-dot.png","isStill":true,"isSolid":false,"type":"image"},"456":{"id":456,"name":"Gradient.png","parentId":0,"width":1920,"height":1080,"duration":0,"frameRate":0,"file":"/Users/lumafilm/Documents/code/moflex-api/editor/public/templates/template1/Gradient.png","url":"Gradient.png","isStill":true,"isSolid":false,"type":"image"}},"clips":{"1_0":{"id":"1_0","parentId":1,"parentLayerId":null,"clipName":"Gradient.png","index":1,"inPoint":0,"outPoint":3,"startTime":0,"enabled":true,"audioEnabled":true,"hasAudio":false,"audioLevel":[0,0],"isThreeD":false,"effects":[
+
+],"properties":{"X Anchor Point":{"name":"X Anchor Point","propertyIndex":1,"value":960,"keyframes":[
+
+]},"Y Anchor Point":{"name":"Y Anchor Point","propertyIndex":1,"value":540,"keyframes":[
+
+]},"Z Anchor Point":{"name":"Z Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"X Position":{"name":"X Position","propertyIndex":2,"value":570,"keyframes":[
+
+]},"Y Position":{"name":"Y Position","propertyIndex":2,"value":540,"keyframes":[
+
+]},"Z Position":{"name":"Z Position","propertyIndex":2,"value":0,"keyframes":[
+
+]},"X Scale":{"name":"X Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"Y Scale":{"name":"Y Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"Z Scale":{"name":"Z Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"X Orientation":{"name":"X Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Y Orientation":{"name":"Y Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Z Orientation":{"name":"Z Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"X Rotation":{"name":"X Rotation","propertyIndex":8,"value":0,"keyframes":[
+
+]},"Y Rotation":{"name":"Y Rotation","propertyIndex":9,"value":0,"keyframes":[
+
+]},"Z Rotation":{"name":"Rotation","propertyIndex":10,"value":0,"keyframes":[
+
+]},"Opacity":{"name":"Opacity","propertyIndex":11,"value":100,"keyframes":[
+
+]}},"blendingModeEnum":5212,"blendMode":"normal","sourceId":456,"layerType":"image","masks":[{"name":"Mask 1","index":1,"inverted":false,"maskPath":{"closed":true,"vertices":[[960,0],[420,540],[960,1080],[1500,540]],"inTangents":[[298.233764648438,0],[0,-298.233764648438],[-298.233764648438,0],[0,298.233764648438]],"outTangents":[[-298.233764648438,0],[0,298.233764648438],[298.233764648438,0],[0,-298.233764648438]]},"maskFeather":[0,0],"maskOpacity":100,"maskExpansion":0,"keyframes":{
+
+}}],"trackMatte":null},"1_1":{"id":"1_1","parentId":1,"parentLayerId":null,"clipName":"Red Solid 1","index":2,"inPoint":0,"outPoint":3,"startTime":0,"enabled":true,"audioEnabled":true,"hasAudio":false,"audioLevel":[0,0],"isThreeD":false,"effects":[
+
+],"properties":{"X Anchor Point":{"name":"X Anchor Point","propertyIndex":1,"value":540,"keyframes":[
+
+]},"Y Anchor Point":{"name":"Y Anchor Point","propertyIndex":1,"value":540,"keyframes":[
+
+]},"Z Anchor Point":{"name":"Z Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"X Position":{"name":"X Position","propertyIndex":2,"value":960,"keyframes":[
+
+]},"Y Position":{"name":"Y Position","propertyIndex":2,"value":540,"keyframes":[
+
+]},"Z Position":{"name":"Z Position","propertyIndex":2,"value":0,"keyframes":[
+
+]},"X Scale":{"name":"X Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"Y Scale":{"name":"Y Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"Z Scale":{"name":"Z Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"X Orientation":{"name":"X Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Y Orientation":{"name":"Y Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Z Orientation":{"name":"Z Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"X Rotation":{"name":"X Rotation","propertyIndex":8,"value":0,"keyframes":[
+
+]},"Y Rotation":{"name":"Y Rotation","propertyIndex":9,"value":0,"keyframes":[
+
+]},"Z Rotation":{"name":"Rotation","propertyIndex":10,"value":0,"keyframes":[
+
+]},"Opacity":{"name":"Opacity","propertyIndex":11,"value":100,"keyframes":[
+
+]}},"blendingModeEnum":5220,"blendMode":"add","sourceId":71,"layerType":"solid","masks":[{"name":"Mask 1","index":1,"inverted":false,"maskPath":{"closed":true,"vertices":[[540,0],[0,540],[540,1080],[1080,540]],"inTangents":[[298.233764648438,0],[0,-298.233764648438],[-298.233764648438,0],[0,298.233764648438]],"outTangents":[[-298.233764648438,0],[0,298.233764648438],[298.233764648438,0],[0,-298.233764648438]]},"maskFeather":[0,0],"maskOpacity":100,"maskExpansion":0,"keyframes":{
+
+}}],"trackMatte":null},"1_2":{"id":"1_2","parentId":1,"parentLayerId":null,"clipName":"75","index":3,"inPoint":0,"outPoint":3,"startTime":0,"enabled":true,"audioEnabled":true,"hasAudio":false,"audioLevel":[0,0],"isThreeD":false,"effects":[
+
+],"properties":{"X Anchor Point":{"name":"X Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"Y Anchor Point":{"name":"Y Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"Z Anchor Point":{"name":"Z Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"X Position":{"name":"X Position","propertyIndex":2,"value":1268,"keyframes":[
+
+]},"Y Position":{"name":"Y Position","propertyIndex":2,"value":212,"keyframes":[
+
+]},"Z Position":{"name":"Z Position","propertyIndex":2,"value":0,"keyframes":[
+
+]},"X Scale":{"name":"X Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"Y Scale":{"name":"Y Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"Z Scale":{"name":"Z Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"X Orientation":{"name":"X Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Y Orientation":{"name":"Y Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Z Orientation":{"name":"Z Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"X Rotation":{"name":"X Rotation","propertyIndex":8,"value":0,"keyframes":[
+
+]},"Y Rotation":{"name":"Y Rotation","propertyIndex":9,"value":0,"keyframes":[
+
+]},"Z Rotation":{"name":"Rotation","propertyIndex":10,"value":0,"keyframes":[
+
+]},"Opacity":{"name":"Opacity","propertyIndex":11,"value":75,"keyframes":[
+
+]}},"blendingModeEnum":5212,"blendMode":"normal","layerType":"text","text":{"sourceText":"75","font":"BigCaslon-Medium","fontSize":287,"fillColor":[1,1,1],"applyFill":true,"justification":7415,"tracking":0,"leading":120,"applyStroke":false,"strokeColor":null,"strokeWidth":null,"strokeOverFill":null,"boxText":false,"boxTextSize":null},"masks":[
+
+],"trackMatte":null},"1_3":{"id":"1_3","parentId":1,"parentLayerId":null,"clipName":"50","index":4,"inPoint":0,"outPoint":3,"startTime":0,"enabled":true,"audioEnabled":true,"hasAudio":false,"audioLevel":[0,0],"isThreeD":false,"effects":[
+
+],"properties":{"X Anchor Point":{"name":"X Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"Y Anchor Point":{"name":"Y Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"Z Anchor Point":{"name":"Z Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"X Position":{"name":"X Position","propertyIndex":2,"value":956,"keyframes":[
+
+]},"Y Position":{"name":"Y Position","propertyIndex":2,"value":216,"keyframes":[
+
+]},"Z Position":{"name":"Z Position","propertyIndex":2,"value":0,"keyframes":[
+
+]},"X Scale":{"name":"X Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"Y Scale":{"name":"Y Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"Z Scale":{"name":"Z Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"X Orientation":{"name":"X Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Y Orientation":{"name":"Y Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Z Orientation":{"name":"Z Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"X Rotation":{"name":"X Rotation","propertyIndex":8,"value":0,"keyframes":[
+
+]},"Y Rotation":{"name":"Y Rotation","propertyIndex":9,"value":0,"keyframes":[
+
+]},"Z Rotation":{"name":"Rotation","propertyIndex":10,"value":0,"keyframes":[
+
+]},"Opacity":{"name":"Opacity","propertyIndex":11,"value":50,"keyframes":[
+
+]}},"blendingModeEnum":5212,"blendMode":"normal","layerType":"text","text":{"sourceText":"50","font":"BigCaslon-Medium","fontSize":287,"fillColor":[1,1,1],"applyFill":true,"justification":7415,"tracking":0,"leading":120,"applyStroke":false,"strokeColor":null,"strokeWidth":null,"strokeOverFill":null,"boxText":false,"boxTextSize":null},"masks":[
+
+],"trackMatte":null},"1_4":{"id":"1_4","parentId":1,"parentLayerId":null,"clipName":"25","index":5,"inPoint":0,"outPoint":3,"startTime":0,"enabled":true,"audioEnabled":true,"hasAudio":false,"audioLevel":[0,0],"isThreeD":false,"effects":[
+
+],"properties":{"X Anchor Point":{"name":"X Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"Y Anchor Point":{"name":"Y Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"Z Anchor Point":{"name":"Z Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"X Position":{"name":"X Position","propertyIndex":2,"value":616,"keyframes":[
+
+]},"Y Position":{"name":"Y Position","propertyIndex":2,"value":218,"keyframes":[
+
+]},"Z Position":{"name":"Z Position","propertyIndex":2,"value":0,"keyframes":[
+
+]},"X Scale":{"name":"X Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"Y Scale":{"name":"Y Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"Z Scale":{"name":"Z Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"X Orientation":{"name":"X Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Y Orientation":{"name":"Y Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Z Orientation":{"name":"Z Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"X Rotation":{"name":"X Rotation","propertyIndex":8,"value":0,"keyframes":[
+
+]},"Y Rotation":{"name":"Y Rotation","propertyIndex":9,"value":0,"keyframes":[
+
+]},"Z Rotation":{"name":"Rotation","propertyIndex":10,"value":0,"keyframes":[
+
+]},"Opacity":{"name":"Opacity","propertyIndex":11,"value":25,"keyframes":[
+
+]}},"blendingModeEnum":5212,"blendMode":"normal","layerType":"text","text":{"sourceText":"25","font":"BigCaslon-Medium","fontSize":287,"fillColor":[1,1,1],"applyFill":true,"justification":7415,"tracking":0,"leading":120,"applyStroke":false,"strokeColor":null,"strokeWidth":null,"strokeOverFill":null,"boxText":false,"boxTextSize":null},"masks":[
+
+],"trackMatte":null},"1_5":{"id":"1_5","parentId":1,"parentLayerId":null,"clipName":"1","index":6,"inPoint":0,"outPoint":3,"startTime":0,"enabled":true,"audioEnabled":true,"hasAudio":false,"audioLevel":[0,0],"isThreeD":false,"effects":[
+
+],"properties":{"X Anchor Point":{"name":"X Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"Y Anchor Point":{"name":"Y Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"Z Anchor Point":{"name":"Z Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"X Position":{"name":"X Position","propertyIndex":2,"value":336,"keyframes":[
+
+]},"Y Position":{"name":"Y Position","propertyIndex":2,"value":218,"keyframes":[
+
+]},"Z Position":{"name":"Z Position","propertyIndex":2,"value":0,"keyframes":[
+
+]},"X Scale":{"name":"X Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"Y Scale":{"name":"Y Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"Z Scale":{"name":"Z Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"X Orientation":{"name":"X Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Y Orientation":{"name":"Y Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Z Orientation":{"name":"Z Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"X Rotation":{"name":"X Rotation","propertyIndex":8,"value":0,"keyframes":[
+
+]},"Y Rotation":{"name":"Y Rotation","propertyIndex":9,"value":0,"keyframes":[
+
+]},"Z Rotation":{"name":"Rotation","propertyIndex":10,"value":0,"keyframes":[
+
+]},"Opacity":{"name":"Opacity","propertyIndex":11,"value":1,"keyframes":[
+
+]}},"blendingModeEnum":5212,"blendMode":"normal","layerType":"text","text":{"sourceText":"1","font":"BigCaslon-Medium","fontSize":287,"fillColor":[1,1,1],"applyFill":true,"justification":7415,"tracking":0,"leading":120,"applyStroke":false,"strokeColor":null,"strokeWidth":null,"strokeOverFill":null,"boxText":false,"boxTextSize":null},"masks":[
+
+],"trackMatte":null},"1_6":{"id":"1_6","parentId":1,"parentLayerId":null,"clipName":"White Solid 1","index":7,"inPoint":0,"outPoint":3,"startTime":0,"enabled":true,"audioEnabled":true,"hasAudio":false,"audioLevel":[0,0],"isThreeD":false,"effects":[
+
+],"properties":{"X Anchor Point":{"name":"X Anchor Point","propertyIndex":1,"value":540,"keyframes":[
+
+]},"Y Anchor Point":{"name":"Y Anchor Point","propertyIndex":1,"value":540,"keyframes":[
+
+]},"Z Anchor Point":{"name":"Z Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"X Position":{"name":"X Position","propertyIndex":2,"value":1710,"keyframes":[
+
+]},"Y Position":{"name":"Y Position","propertyIndex":2,"value":164,"keyframes":[
+
+]},"Z Position":{"name":"Z Position","propertyIndex":2,"value":0,"keyframes":[
+
+]},"X Scale":{"name":"X Scale","propertyIndex":6,"value":21,"keyframes":[
+
+]},"Y Scale":{"name":"Y Scale","propertyIndex":6,"value":21,"keyframes":[
+
+]},"Z Scale":{"name":"Z Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"X Orientation":{"name":"X Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Y Orientation":{"name":"Y Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Z Orientation":{"name":"Z Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"X Rotation":{"name":"X Rotation","propertyIndex":8,"value":0,"keyframes":[
+
+]},"Y Rotation":{"name":"Y Rotation","propertyIndex":9,"value":0,"keyframes":[
+
+]},"Z Rotation":{"name":"Rotation","propertyIndex":10,"value":0,"keyframes":[
+
+]},"Opacity":{"name":"Opacity","propertyIndex":11,"value":100,"keyframes":[
+
+]}},"blendingModeEnum":5212,"blendMode":"normal","sourceId":324,"layerType":"solid","masks":[{"name":"Mask 1","index":1,"inverted":false,"maskPath":{"closed":true,"vertices":[[540,0],[0,540],[540,1080],[1080,540]],"inTangents":[[298.233764648438,0],[0,-298.233764648438],[-298.233764648438,0],[0,298.233764648438]],"outTangents":[[-298.233764648438,0],[0,298.233764648438],[298.233764648438,0],[0,-298.233764648438]]},"maskFeather":[0,0],"maskOpacity":50,"maskExpansion":0,"keyframes":{
+
+}}],"trackMatte":null},"1_7":{"id":"1_7","parentId":1,"parentLayerId":null,"clipName":"Red Solid 1","index":8,"inPoint":0,"outPoint":3,"startTime":0,"enabled":true,"audioEnabled":true,"hasAudio":false,"audioLevel":[0,0],"isThreeD":false,"effects":[
+
+],"properties":{"X Anchor Point":{"name":"X Anchor Point","propertyIndex":1,"value":540,"keyframes":[
+
+]},"Y Anchor Point":{"name":"Y Anchor Point","propertyIndex":1,"value":540,"keyframes":[
+
+]},"Z Anchor Point":{"name":"Z Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"X Position":{"name":"X Position","propertyIndex":2,"value":1710,"keyframes":[
+
+]},"Y Position":{"name":"Y Position","propertyIndex":2,"value":438,"keyframes":[
+
+]},"Z Position":{"name":"Z Position","propertyIndex":2,"value":0,"keyframes":[
+
+]},"X Scale":{"name":"X Scale","propertyIndex":6,"value":21,"keyframes":[
+
+]},"Y Scale":{"name":"Y Scale","propertyIndex":6,"value":21,"keyframes":[
+
+]},"Z Scale":{"name":"Z Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"X Orientation":{"name":"X Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Y Orientation":{"name":"Y Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Z Orientation":{"name":"Z Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"X Rotation":{"name":"X Rotation","propertyIndex":8,"value":0,"keyframes":[
+
+]},"Y Rotation":{"name":"Y Rotation","propertyIndex":9,"value":0,"keyframes":[
+
+]},"Z Rotation":{"name":"Rotation","propertyIndex":10,"value":0,"keyframes":[
+
+]},"Opacity":{"name":"Opacity","propertyIndex":11,"value":100,"keyframes":[
+
+]}},"blendingModeEnum":5220,"blendMode":"add","sourceId":71,"layerType":"solid","masks":[{"name":"Mask 1","index":1,"inverted":false,"maskPath":{"closed":true,"vertices":[[540,0],[0,540],[540,1080],[1080,540]],"inTangents":[[298.233764648438,0],[0,-298.233764648438],[-298.233764648438,0],[0,298.233764648438]],"outTangents":[[-298.233764648438,0],[0,298.233764648438],[298.233764648438,0],[0,-298.233764648438]]},"maskFeather":[0,0],"maskOpacity":100,"maskExpansion":0,"keyframes":{
+
+}}],"trackMatte":null},"1_8":{"id":"1_8","parentId":1,"parentLayerId":null,"clipName":"TEST","index":9,"inPoint":0,"outPoint":3,"startTime":0,"enabled":true,"audioEnabled":true,"hasAudio":false,"audioLevel":[0,0],"isThreeD":false,"effects":[
+
+],"properties":{"X Anchor Point":{"name":"X Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"Y Anchor Point":{"name":"Y Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"Z Anchor Point":{"name":"Z Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"X Position":{"name":"X Position","propertyIndex":2,"value":960,"keyframes":[
+
+]},"Y Position":{"name":"Y Position","propertyIndex":2,"value":540,"keyframes":[
+
+]},"Z Position":{"name":"Z Position","propertyIndex":2,"value":0,"keyframes":[
+
+]},"X Scale":{"name":"X Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"Y Scale":{"name":"Y Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"Z Scale":{"name":"Z Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"X Orientation":{"name":"X Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Y Orientation":{"name":"Y Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Z Orientation":{"name":"Z Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"X Rotation":{"name":"X Rotation","propertyIndex":8,"value":0,"keyframes":[
+
+]},"Y Rotation":{"name":"Y Rotation","propertyIndex":9,"value":0,"keyframes":[
+
+]},"Z Rotation":{"name":"Rotation","propertyIndex":10,"value":0,"keyframes":[
+
+]},"Opacity":{"name":"Opacity","propertyIndex":11,"value":100,"keyframes":[
+
+]}},"blendingModeEnum":5212,"blendMode":"normal","layerType":"text","text":{"sourceText":"TEST","font":"BigCaslon-Medium","fontSize":287,"fillColor":[1,1,1],"applyFill":true,"justification":7415,"tracking":0,"leading":120,"applyStroke":false,"strokeColor":null,"strokeWidth":null,"strokeOverFill":null,"boxText":false,"boxTextSize":null},"masks":[
+
+],"trackMatte":null},"1_9":{"id":"1_9","parentId":1,"parentLayerId":null,"clipName":"Correct-dot.png","index":10,"inPoint":0,"outPoint":3,"startTime":0,"enabled":true,"audioEnabled":true,"hasAudio":false,"audioLevel":[0,0],"isThreeD":false,"effects":[
+
+],"properties":{"X Anchor Point":{"name":"X Anchor Point","propertyIndex":1,"value":960,"keyframes":[
+
+]},"Y Anchor Point":{"name":"Y Anchor Point","propertyIndex":1,"value":540,"keyframes":[
+
+]},"Z Anchor Point":{"name":"Z Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"X Position":{"name":"X Position","propertyIndex":2,"value":960,"keyframes":[
+
+]},"Y Position":{"name":"Y Position","propertyIndex":2,"value":800,"keyframes":[
+
+]},"Z Position":{"name":"Z Position","propertyIndex":2,"value":0,"keyframes":[
+
+]},"X Scale":{"name":"X Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"Y Scale":{"name":"Y Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"Z Scale":{"name":"Z Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"X Orientation":{"name":"X Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Y Orientation":{"name":"Y Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Z Orientation":{"name":"Z Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"X Rotation":{"name":"X Rotation","propertyIndex":8,"value":0,"keyframes":[
+
+]},"Y Rotation":{"name":"Y Rotation","propertyIndex":9,"value":0,"keyframes":[
+
+]},"Z Rotation":{"name":"Rotation","propertyIndex":10,"value":0,"keyframes":[
+
+]},"Opacity":{"name":"Opacity","propertyIndex":11,"value":100,"keyframes":[
+
+]}},"blendingModeEnum":5212,"blendMode":"normal","sourceId":74,"layerType":"image","masks":[
+
+],"trackMatte":null},"1_10":{"id":"1_10","parentId":1,"parentLayerId":null,"clipName":"Black Solid 1","index":11,"inPoint":0,"outPoint":3,"startTime":0,"enabled":true,"audioEnabled":true,"hasAudio":false,"audioLevel":[0,0],"isThreeD":false,"effects":[
+
+],"properties":{"X Anchor Point":{"name":"X Anchor Point","propertyIndex":1,"value":960,"keyframes":[
+
+]},"Y Anchor Point":{"name":"Y Anchor Point","propertyIndex":1,"value":540,"keyframes":[
+
+]},"Z Anchor Point":{"name":"Z Anchor Point","propertyIndex":1,"value":0,"keyframes":[
+
+]},"X Position":{"name":"X Position","propertyIndex":2,"value":960,"keyframes":[
+
+]},"Y Position":{"name":"Y Position","propertyIndex":2,"value":540,"keyframes":[
+
+]},"Z Position":{"name":"Z Position","propertyIndex":2,"value":0,"keyframes":[
+
+]},"X Scale":{"name":"X Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"Y Scale":{"name":"Y Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"Z Scale":{"name":"Z Scale","propertyIndex":6,"value":100,"keyframes":[
+
+]},"X Orientation":{"name":"X Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Y Orientation":{"name":"Y Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"Z Orientation":{"name":"Z Orientation","propertyIndex":7,"value":0,"keyframes":[
+
+]},"X Rotation":{"name":"X Rotation","propertyIndex":8,"value":0,"keyframes":[
+
+]},"Y Rotation":{"name":"Y Rotation","propertyIndex":9,"value":0,"keyframes":[
+
+]},"Z Rotation":{"name":"Rotation","propertyIndex":10,"value":0,"keyframes":[
+
+]},"Opacity":{"name":"Opacity","propertyIndex":11,"value":100,"keyframes":[
+
+]}},"blendingModeEnum":5212,"blendMode":"normal","sourceId":102,"layerType":"solid","masks":[
+
+],"trackMatte":null}},"activeCompId":1,"essentialGraphics":{"templateName":"Untitled","compId":1,"compName":"Comp 1","properties":[
+
+],"error":"Template exists but no exposed properties found"}}

@@ -56,7 +56,8 @@ function buildShapeGeometryFromPath(pathData) {
             shape.closePath();
         }
 
-        return new THREE.ShapeGeometry(shape);
+        // Use high curveSegments for smooth bezier curves (default is 12)
+        return new THREE.ShapeGeometry(shape, 64);
     } catch (err) {
         // Hard fallback
         const s = new THREE.Shape();
@@ -65,7 +66,7 @@ function buildShapeGeometryFromPath(pathData) {
         s.lineTo(100, 100);
         s.lineTo(0, 100);
         s.closePath();
-        return new THREE.ShapeGeometry(s);
+        return new THREE.ShapeGeometry(s, 64);
     }
 }
 
@@ -111,6 +112,35 @@ export default function LayerMask({ width, height, clip, time }) {
         return mask?.maskPath || null;
     }
 
+    function getAnimatedMaskOpacity(mask) {
+        // Check for animated mask opacity keyframes
+        const keyframes = mask?.keyframes?.maskOpacity;
+        if (keyframes && keyframes.length > 0) {
+            const linearTrack = {
+                keyframes: keyframes.map((kf) => ({
+                    time: kf.time,
+                    value: kf.value,
+                    easing: {
+                        inType: "LINEAR",
+                        outType: "LINEAR",
+                        inEase: { speed: 0, influence: 16.666666667 },
+                        outEase: { speed: 0, influence: 16.666666667 },
+                    },
+                })),
+            };
+            try {
+                // AE mask opacity is 0-100, convert to 0-1
+                return getValueAtTime(linearTrack, time) / 100;
+            } catch (_) {
+                // fallthrough
+            }
+        }
+
+        // Static mask opacity (AE uses 0-100, default is 100)
+        const staticOpacity = mask?.maskOpacity ?? 100;
+        return staticOpacity / 100;
+    }
+
     const maskMeshes = useMemo(() => {
         if (!masks || masks.length === 0) return null;
 
@@ -119,13 +149,13 @@ export default function LayerMask({ width, height, clip, time }) {
             if (!pathData) return null;
 
             const geometry = buildShapeGeometryFromPath(pathData);
+            const maskOpacity = getAnimatedMaskOpacity(mask);
 
             // The path coordinates are already in pixel space relative to comp
             // Draw as filled white shape for alpha/luma mask usage
             return (
                 <mesh key={idx} geometry={geometry}>
-                    {/* <meshBasicMaterial color="white" side={THREE.DoubleSide} /> */}
-                    <meshBasicMaterial color="white" transparent opacity={1} toneMapped={false} side={THREE.DoubleSide} />
+                    <meshBasicMaterial color="white" transparent opacity={maskOpacity} toneMapped={false} side={THREE.DoubleSide} />
                 </mesh>
             );
         });
