@@ -1,9 +1,8 @@
 // MaskedLayer.jsx
 import * as THREE from "three";
 import { useThree, createPortal } from "@react-three/fiber";
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
-import { useFBO } from "@react-three/drei";
 
 /**
  * Props:
@@ -24,25 +23,36 @@ export default function MaskedLayer({
 }) {
     const gl = useThree((s) => s.gl);
 
-    // --- Render targets
-    const colorRT = useFBO(width, height, {
-        samples: 0,
-        depthBuffer: false,
-        stencilBuffer: false,
-        format: THREE.RGBAFormat,
-        type: THREE.UnsignedByteType,
-    });
-    // Store raw linear color in offscreen buffers (equivalent to Canvas flat)
-    colorRT.texture.colorSpace = THREE.NoColorSpace;
+    // --- Render targets using WebGLRenderTarget directly for proper MSAA
+    const colorRT = useMemo(() => {
+        const rt = new THREE.WebGLRenderTarget(width, height, {
+            depthBuffer: false,
+            stencilBuffer: false,
+            format: THREE.RGBAFormat,
+            type: THREE.UnsignedByteType,
+        });
+        rt.texture.colorSpace = THREE.NoColorSpace;
+        return rt;
+    }, [width, height]);
 
-    const maskRT = useFBO(width, height, {
-        samples: 0,
-        depthBuffer: false,
-        stencilBuffer: false,
-        format: THREE.RGBAFormat, // Broad compatibility across WebGL1/2
-        type: THREE.UnsignedByteType,
-    });
-    maskRT.texture.colorSpace = THREE.NoColorSpace;
+    const maskRT = useMemo(() => {
+        const rt = new THREE.WebGLRenderTarget(width, height, {
+            depthBuffer: false,
+            stencilBuffer: false,
+            format: THREE.RGBAFormat,
+            type: THREE.UnsignedByteType,
+        });
+        rt.texture.colorSpace = THREE.NoColorSpace;
+        return rt;
+    }, [width, height]);
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            colorRT.dispose();
+            maskRT.dispose();
+        };
+    }, [colorRT, maskRT]);
 
     // --- Scener + ortho-kamera i pixelspace
     const contentScene = useMemo(() => new THREE.Scene(), []);
@@ -51,7 +61,6 @@ export default function MaskedLayer({
     const cam = useMemo(() => {
         // Ortho-kamera i pixelspace: (0,0) nederst venstre → (width,height) øverst højre
         const c = new THREE.OrthographicCamera(0, width, 0, height, 0.1, 1000);
-        // Flip Y, så (0,0) bliver nederst-venstre som i 2D
         c.position.set(0, 0, 10);
         c.updateProjectionMatrix();
         return c;
@@ -67,6 +76,7 @@ export default function MaskedLayer({
                 tMask: { value: maskRT.texture },
                 uMode: { value: mode === "luma" ? 1 : 0 },
                 uInvert: { value: invert ? 1 : 0 },
+                uPixelSize: { value: new THREE.Vector2(1.0 / width, 1.0 / height) },
             },
             transparent: true,
             depthWrite: false,
@@ -87,21 +97,32 @@ export default function MaskedLayer({
         uniform sampler2D tMask;
         uniform int uMode;   // 0=alpha, 1=luma
         uniform int uInvert; // 0=normal, 1=invert
+        uniform vec2 uPixelSize;
         varying vec2 vUv;
 
         float luma(vec3 c){ return dot(c, vec3(0.299, 0.587, 0.114)); }
+        
+        float getMaskValue(vec2 uv) {
+          vec4 s = texture2D(tMask, uv);
+          return uMode == 1 ? luma(s.rgb) : s.a;
+        }
 
         void main(){
           vec4 col = texture2D(tColor, vUv);
-          vec4 maskSample = texture2D(tMask, vUv);
-          float m;
-          if(uMode == 1){
-              // Luma matte: use luminance from mask texture (RGB)
-              m = luma(maskSample.rgb);
-          } else {
-              // Alpha matte: use mask alpha channel
-              m = maskSample.a;
-          }
+          
+          // Soft edge blur for antialiasing (1.5 pixel radius)
+          vec2 blur = uPixelSize * 1.5;
+          float m = 0.0;
+          m += getMaskValue(vUv + vec2(-blur.x, -blur.y)) * 0.0625;
+          m += getMaskValue(vUv + vec2(0.0, -blur.y)) * 0.125;
+          m += getMaskValue(vUv + vec2(blur.x, -blur.y)) * 0.0625;
+          m += getMaskValue(vUv + vec2(-blur.x, 0.0)) * 0.125;
+          m += getMaskValue(vUv) * 0.25;
+          m += getMaskValue(vUv + vec2(blur.x, 0.0)) * 0.125;
+          m += getMaskValue(vUv + vec2(-blur.x, blur.y)) * 0.0625;
+          m += getMaskValue(vUv + vec2(0.0, blur.y)) * 0.125;
+          m += getMaskValue(vUv + vec2(blur.x, blur.y)) * 0.0625;
+          
           if(uInvert == 1) m = 1.0 - m;
 
           // Apply mask to alpha only, keep RGB unchanged
@@ -110,7 +131,7 @@ export default function MaskedLayer({
         }
       `,
         });
-    }, [colorRT, maskRT, mode, invert]);
+    }, [colorRT, maskRT, mode, invert, width, height]);
 
     // --- Render loops (childrens portals lever i subscener)
     useFrame(() => {
@@ -121,7 +142,7 @@ export default function MaskedLayer({
         gl.clear(true, true, true);
         gl.render(contentScene, cam);
 
-        // Render MASK til maskRT (sort baggrund, hvid maske)
+        // Render MASK
         gl.setRenderTarget(maskRT);
         gl.setClearColor(0x000000, 0);
         gl.clear(true, true, true);

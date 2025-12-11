@@ -136,7 +136,8 @@ const ShapeLayer = ({ id, clip, updatePropertyValue, setSelectedClipId, selected
                 shape.closePath();
             }
 
-            return new THREE.ShapeGeometry(shape);
+            // Use 64 curve segments for smooth circles/curves
+            return new THREE.ShapeGeometry(shape, 64);
         } catch (error) {
             console.error("Error creating shape geometry:", error);
             // Return a default geometry if shape creation fails
@@ -146,7 +147,7 @@ const ShapeLayer = ({ id, clip, updatePropertyValue, setSelectedClipId, selected
             defaultShape.lineTo(100, 100);
             defaultShape.lineTo(0, 100);
             defaultShape.closePath();
-            return new THREE.ShapeGeometry(defaultShape);
+            return new THREE.ShapeGeometry(defaultShape, 64);
         }
     }, [pathData]);
 

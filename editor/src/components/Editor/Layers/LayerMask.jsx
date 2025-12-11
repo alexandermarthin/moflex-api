@@ -120,12 +120,14 @@ export default function LayerMask({ width, height, clip, time }) {
 
             const geometry = buildShapeGeometryFromPath(pathData);
 
+            // Get mask opacity (0-100 in AE format, convert to 0-1)
+            const maskOpacity = (mask.maskOpacity ?? 100) / 100;
+
             // The path coordinates are already in pixel space relative to comp
             // Draw as filled white shape for alpha/luma mask usage
             return (
                 <mesh key={idx} geometry={geometry}>
-                    {/* <meshBasicMaterial color="white" side={THREE.DoubleSide} /> */}
-                    <meshBasicMaterial color="white" transparent opacity={1} toneMapped={false} side={THREE.DoubleSide} />
+                    <meshBasicMaterial color="white" transparent opacity={maskOpacity} toneMapped={false} side={THREE.DoubleSide} />
                 </mesh>
             );
         });
