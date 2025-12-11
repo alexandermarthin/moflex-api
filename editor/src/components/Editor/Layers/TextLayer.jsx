@@ -117,10 +117,10 @@ const TextLayer = ({ id, clip, updatePropertyValue, setSelectedClipId, selectedC
                     <group onClick={handleClick} className="cursor-pointer" scale={[1, -1, 1]}>
                         <Text
                             color={color}
-                            font={"/fonts/" + clip.text.font + ".otf"}
+                            font={"/fonts/" + clip.text.font + ".ttf"}
                             fontSize={clip.text.fontSize}
                             anchorX={anchorXString}
-                            anchorY="middle"
+                            anchorY="bottom-baseline"
                             outlineWidth={clip.text.applyStroke ? clip.text.strokeWidth : 0}
                             outlineColor={clip.text.strokeColor ? new THREE.Color(...clip.text.strokeColor) : "#000000"}
                             fillOpacity={opacity}
