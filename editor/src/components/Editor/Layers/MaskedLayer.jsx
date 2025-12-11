@@ -24,7 +24,7 @@ export default function MaskedLayer({ compWidth, compHeight, width, height, mode
 
     // --- Render targets at comp resolution
     const colorRT = useFBO(fboWidth, fboHeight, {
-        samples: 0,
+        samples: 8,
         depthBuffer: false,
         stencilBuffer: false,
         format: THREE.RGBAFormat,
@@ -34,7 +34,7 @@ export default function MaskedLayer({ compWidth, compHeight, width, height, mode
     colorRT.texture.colorSpace = THREE.NoColorSpace;
 
     const maskRT = useFBO(fboWidth, fboHeight, {
-        samples: 0,
+        samples: 8,
         depthBuffer: false,
         stencilBuffer: false,
         format: THREE.RGBAFormat, // Broad compatibility across WebGL1/2

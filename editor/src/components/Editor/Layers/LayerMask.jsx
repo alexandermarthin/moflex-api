@@ -56,7 +56,8 @@ function buildShapeGeometryFromPath(pathData) {
             shape.closePath();
         }
 
-        return new THREE.ShapeGeometry(shape);
+        // Use high curveSegments for smooth bezier curves (default is 12)
+        return new THREE.ShapeGeometry(shape, 64);
     } catch (err) {
         // Hard fallback
         const s = new THREE.Shape();
@@ -65,7 +66,7 @@ function buildShapeGeometryFromPath(pathData) {
         s.lineTo(100, 100);
         s.lineTo(0, 100);
         s.closePath();
-        return new THREE.ShapeGeometry(s);
+        return new THREE.ShapeGeometry(s, 64);
     }
 }
 
