@@ -7,25 +7,23 @@ import { useFBO } from "@react-three/drei";
 
 /**
  * Props:
- *  - width, height: comp/layer size i pixels
+ *  - compWidth, compHeight: composition dimensions in pixels (FBO size)
+ *  - width, height: layer/asset dimensions in pixels (for content positioning)
  *  - mode: 'alpha' | 'luma'
  *  - invert: boolean
- *  - children: content der skal maskes (renderes til colorRT)
- *  - mask: mask geometry (renderes til maskRT som hvid på sort)
+ *  - children: content to be masked (rendered to colorRT)
+ *  - mask: mask geometry (rendered to maskRT as white on black)
+ *  - transform: { position, scale, rotation, anchorPoint } - applied inside FBO scenes
  */
-export default function MaskedLayer({
-    width,
-    height,
-    mode = "alpha",
-    invert = false,
-    children,
-    mask,
-    // z, transform osv. styres udenom via wrapper <group> (se integration nedenfor)
-}) {
+export default function MaskedLayer({ compWidth, compHeight, width, height, mode = "alpha", invert = false, children, mask, transform }) {
     const gl = useThree((s) => s.gl);
 
-    // --- Render targets
-    const colorRT = useFBO(width, height, {
+    // Use comp dimensions for FBOs to render at output resolution
+    const fboWidth = compWidth || width;
+    const fboHeight = compHeight || height;
+
+    // --- Render targets at comp resolution
+    const colorRT = useFBO(fboWidth, fboHeight, {
         samples: 0,
         depthBuffer: false,
         stencilBuffer: false,
@@ -35,7 +33,7 @@ export default function MaskedLayer({
     // Store raw linear color in offscreen buffers (equivalent to Canvas flat)
     colorRT.texture.colorSpace = THREE.NoColorSpace;
 
-    const maskRT = useFBO(width, height, {
+    const maskRT = useFBO(fboWidth, fboHeight, {
         samples: 0,
         depthBuffer: false,
         stencilBuffer: false,
@@ -44,20 +42,19 @@ export default function MaskedLayer({
     });
     maskRT.texture.colorSpace = THREE.NoColorSpace;
 
-    // --- Scener + ortho-kamera i pixelspace
+    // --- Scenes + ortho camera in pixel space (comp dimensions)
     const contentScene = useMemo(() => new THREE.Scene(), []);
     const maskScene = useMemo(() => new THREE.Scene(), []);
 
     const cam = useMemo(() => {
-        // Ortho-kamera i pixelspace: (0,0) nederst venstre → (width,height) øverst højre
-        const c = new THREE.OrthographicCamera(0, width, 0, height, 0.1, 1000);
-        // Flip Y, så (0,0) bliver nederst-venstre som i 2D
+        // Ortho camera in pixel space: (0,0) bottom-left → (fboWidth, fboHeight) top-right
+        const c = new THREE.OrthographicCamera(0, fboWidth, 0, fboHeight, 0.1, 1000);
         c.position.set(0, 0, 10);
         c.updateProjectionMatrix();
         return c;
-    }, [width, height]);
+    }, [fboWidth, fboHeight]);
 
-    // --- Fullscreen quad i hovedscenen, der kompositér RT'erne
+    // --- Fullscreen quad in main scene that composites the RTs
     const matRef = useRef();
 
     const shaderMat = useMemo(() => {
@@ -112,45 +109,57 @@ export default function MaskedLayer({
         });
     }, [colorRT, maskRT, mode, invert]);
 
-    // --- Render loops (childrens portals lever i subscener)
+    // --- Render loop
     useFrame(() => {
-        // Render CONTENT til colorRT
+        // Render CONTENT to colorRT
         const prevRT = gl.getRenderTarget();
         gl.setRenderTarget(colorRT);
         gl.setClearColor(0x000000, 0);
         gl.clear(true, true, true);
         gl.render(contentScene, cam);
 
-        // Render MASK til maskRT (sort baggrund, hvid maske)
+        // Render MASK to maskRT (black background, white mask)
         gl.setRenderTarget(maskRT);
         gl.setClearColor(0x000000, 0);
         gl.clear(true, true, true);
         gl.render(maskScene, cam);
 
         gl.setRenderTarget(prevRT);
-        // Sørg for at shaderen ser de nyeste teksturer
+        // Ensure shader sees the latest textures
         matRef.current && (matRef.current.uniforms.tColor.value = colorRT.texture);
         matRef.current && (matRef.current.uniforms.tMask.value = maskRT.texture);
     });
 
+    // Build transform group props from transform object
+    const transformGroupProps = transform
+        ? {
+              position: [transform.position.x, transform.position.y, transform.position.z],
+              scale: [transform.scale.x, transform.scale.y, transform.scale.z],
+              rotation: [Math.PI * (transform.rotation.x / 180), Math.PI * (transform.rotation.y / 180), Math.PI * (transform.rotation.z / 180)],
+          }
+        : {};
+
+    const anchorOffset = transform ? [-transform.anchorPoint.x, -transform.anchorPoint.y, -transform.anchorPoint.z] : [0, 0, 0];
+
     return (
         <>
-            {/* Portals: render children & mask i deres egne scener i pixelspace */}
+            {/* Portals: render children & mask in their own scenes with transforms applied */}
             {createPortal(
-                // Indhold skal typisk være placeret med samme pixelspace-koords.
-                // Eksempel: et plan centreret i (width/2, height/2) i local space.
-                <group>{children}</group>,
+                <group {...transformGroupProps}>
+                    <group position={anchorOffset}>{children}</group>
+                </group>,
                 contentScene
             )}
             {createPortal(
-                // Masken skal tegnes i HVID på SORT. Brug meshBasicMaterial color="white".
-                <group>{mask}</group>,
+                <group {...transformGroupProps}>
+                    <group position={anchorOffset}>{mask}</group>
+                </group>,
                 maskScene
             )}
 
-            {/* Komposit-output i hovedscenen: et plan i lagets størrelse */}
-            <mesh position={[width / 2, height / 2, 0]} scale={[1, -1, 1]}>
-                <planeGeometry args={[width, height]} />
+            {/* Composite output in main scene: full-comp quad (transforms already applied inside FBOs) */}
+            <mesh position={[fboWidth / 2, fboHeight / 2, 0]} scale={[1, -1, 1]}>
+                <planeGeometry args={[fboWidth, fboHeight]} />
                 <primitive object={shaderMat} attach="material" ref={matRef} />
             </mesh>
         </>

@@ -26,7 +26,7 @@ const ThreeDScene = ({ width, height, assets, clips, updatePropertyValue, setSel
     };
     const renderClipEl = (id, clip) => {
         const parentClip = clip.parentLayerId ? clips[clip.parentLayerId] : null;
-        const common = { id, clip, updatePropertyValue, setSelectedClipId, selectedClipId, time, parentClip, projectId };
+        const common = { id, clip, updatePropertyValue, setSelectedClipId, selectedClipId, time, parentClip, projectId, compWidth: width, compHeight: height };
         switch (clip.layerType) {
             case "solid":
                 return <SolidLayer key={id} {...common} solidItem={assets[clip.sourceId]} />;

@@ -9,7 +9,7 @@ import { PivotControls } from "@react-three/drei";
 import MaskedLayer from "@/components/Editor/Layers/MaskedLayer";
 import LayerMask from "@/components/Editor/Layers/LayerMask";
 
-const ImageLayer = ({ id, clip, asset, updatePropertyValue, setSelectedClipId, selectedClipId, time, parentClip, projectId }) => {
+const ImageLayer = ({ id, clip, asset, updatePropertyValue, setSelectedClipId, selectedClipId, time, parentClip, projectId, compWidth, compHeight }) => {
     const { anchorPoint, position, scale, rotation, relativePosition, relativeScale, relativeRotation } = getTransform(clip, time);
 
     // Initialize local state with current relative values from store
@@ -77,6 +77,104 @@ const ImageLayer = ({ id, clip, asset, updatePropertyValue, setSelectedClipId, s
 
     const hasMasks = (clip?.masks && clip.masks.length > 0) || clip?.properties?.["Mask Path"]?.keyframes?.length > 0;
 
+    // Transform object to pass to MaskedLayer (applied inside FBO scenes)
+    const transform = {
+        position,
+        scale,
+        rotation,
+        anchorPoint,
+    };
+
+    // The mesh content (same for both masked and non-masked)
+    const meshContent = (
+        <mesh position={[width / 2, height / 2, 0]} onClick={handleClick}>
+            <planeGeometry args={[width, height]} />
+            <meshBasicMaterial map={texture} transparent opacity={opacity} side={THREE.DoubleSide} />
+        </mesh>
+    );
+
+    // For masked layers, MaskedLayer handles transforms internally at comp resolution
+    if (hasMasks) {
+        const maskedContent = (
+            <PivotControls
+                matrix={matrix}
+                autoTransform={false}
+                anchor={[0, 0, 0]}
+                depthTest={false}
+                scale={200}
+                lineWidth={3}
+                visible={selectedClipId === id}
+                activeAxes={[true, true, clip.isThreeD]}
+                rotation={[Math.PI, 0, 0]}
+                onDrag={(localMatrix, deltaLocalMatrix, worldMatrix, deltaWorldMatrix) => {
+                    // Extract position from the matrix
+                    const position = [localMatrix.elements[12], localMatrix.elements[13], localMatrix.elements[14]];
+                    setLocalRelativePosition(position);
+
+                    // Extract scale from the matrix (as final scale multipliers, not relative additions)
+                    const sx = Math.sqrt(localMatrix.elements[0] ** 2 + localMatrix.elements[1] ** 2 + localMatrix.elements[2] ** 2);
+                    const sy = Math.sqrt(localMatrix.elements[4] ** 2 + localMatrix.elements[5] ** 2 + localMatrix.elements[6] ** 2);
+                    const sz = Math.sqrt(localMatrix.elements[8] ** 2 + localMatrix.elements[9] ** 2 + localMatrix.elements[10] ** 2);
+
+                    // Extract rotation from the matrix
+                    const scaleVals = [sx, sy, sz];
+                    const rotMatrix = localMatrix.clone();
+                    rotMatrix.elements[12] = 0; // Remove translation
+                    rotMatrix.elements[13] = 0;
+                    rotMatrix.elements[14] = 0;
+
+                    // Normalize by scale to get pure rotation
+                    rotMatrix.elements[0] /= scaleVals[0];
+                    rotMatrix.elements[1] /= scaleVals[0];
+                    rotMatrix.elements[2] /= scaleVals[0];
+                    rotMatrix.elements[4] /= scaleVals[1];
+                    rotMatrix.elements[5] /= scaleVals[1];
+                    rotMatrix.elements[6] /= scaleVals[1];
+                    rotMatrix.elements[8] /= scaleVals[2];
+                    rotMatrix.elements[9] /= scaleVals[2];
+                    rotMatrix.elements[10] /= scaleVals[2];
+
+                    const euler = new THREE.Euler();
+                    euler.setFromRotationMatrix(rotMatrix);
+                    const rotVals = [THREE.MathUtils.radToDeg(euler.x), THREE.MathUtils.radToDeg(euler.y), THREE.MathUtils.radToDeg(euler.z)];
+                    setLocalRelativeRotation(rotVals);
+                    setLocalRelativeScale([sx, sy, sz]);
+                }}
+                onDragEnd={handleDragEnd}
+            >
+                <MaskedLayer
+                    compWidth={compWidth}
+                    compHeight={compHeight}
+                    width={width}
+                    height={height}
+                    mode="alpha"
+                    invert={false}
+                    transform={transform}
+                    mask={<LayerMask width={width} height={height} clip={clip} time={time} />}
+                >
+                    {meshContent}
+                </MaskedLayer>
+            </PivotControls>
+        );
+
+        if (parentClip) {
+            const { anchorPoint: parentAnchorPoint, position: parentPosition, scale: parentScale, rotation: parentRotation } = getTransform(parentClip, time);
+
+            return (
+                <group
+                    position={[parentPosition.x, parentPosition.y, parentPosition.z]}
+                    scale={[parentScale.x, parentScale.y, parentScale.z]}
+                    rotation={[Math.PI * (parentRotation.x / 180), Math.PI * (parentRotation.y / 180), Math.PI * (parentRotation.z / 180)]}
+                >
+                    <group position={[-parentAnchorPoint.x, -parentAnchorPoint.y, -parentAnchorPoint.z]}>{maskedContent}</group>
+                </group>
+            );
+        }
+
+        return maskedContent;
+    }
+
+    // Non-masked layers keep the original transform structure
     const content = (
         <PivotControls
             matrix={matrix}
@@ -99,27 +197,28 @@ const ImageLayer = ({ id, clip, asset, updatePropertyValue, setSelectedClipId, s
                 const sz = Math.sqrt(localMatrix.elements[8] ** 2 + localMatrix.elements[9] ** 2 + localMatrix.elements[10] ** 2);
 
                 // Extract rotation from the matrix
-                const scale = [sx, sy, sz];
-                const rotationMatrix = localMatrix.clone();
-                rotationMatrix.elements[12] = 0; // Remove translation
-                rotationMatrix.elements[13] = 0;
-                rotationMatrix.elements[14] = 0;
+                const scaleVals = [sx, sy, sz];
+                const rotMatrix = localMatrix.clone();
+                rotMatrix.elements[12] = 0; // Remove translation
+                rotMatrix.elements[13] = 0;
+                rotMatrix.elements[14] = 0;
 
                 // Normalize by scale to get pure rotation
-                rotationMatrix.elements[0] /= scale[0];
-                rotationMatrix.elements[1] /= scale[0];
-                rotationMatrix.elements[2] /= scale[0];
-                rotationMatrix.elements[4] /= scale[1];
-                rotationMatrix.elements[5] /= scale[1];
-                rotationMatrix.elements[6] /= scale[1];
-                rotationMatrix.elements[8] /= scale[2];
-                rotationMatrix.elements[9] /= scale[2];
-                rotationMatrix.elements[10] /= scale[2];
+                rotMatrix.elements[0] /= scaleVals[0];
+                rotMatrix.elements[1] /= scaleVals[0];
+                rotMatrix.elements[2] /= scaleVals[0];
+                rotMatrix.elements[4] /= scaleVals[1];
+                rotMatrix.elements[5] /= scaleVals[1];
+                rotMatrix.elements[6] /= scaleVals[1];
+                rotMatrix.elements[8] /= scaleVals[2];
+                rotMatrix.elements[9] /= scaleVals[2];
+                rotMatrix.elements[10] /= scaleVals[2];
 
                 const euler = new THREE.Euler();
-                euler.setFromRotationMatrix(rotationMatrix);
-                const rotation = [THREE.MathUtils.radToDeg(euler.x), THREE.MathUtils.radToDeg(euler.y), THREE.MathUtils.radToDeg(euler.z)];
-                setLocalRelativeRotation(rotation);
+                euler.setFromRotationMatrix(rotMatrix);
+                const rotVals = [THREE.MathUtils.radToDeg(euler.x), THREE.MathUtils.radToDeg(euler.y), THREE.MathUtils.radToDeg(euler.z)];
+                setLocalRelativeRotation(rotVals);
+                setLocalRelativeScale([sx, sy, sz]);
             }}
             onDragEnd={handleDragEnd}
         >
@@ -128,21 +227,7 @@ const ImageLayer = ({ id, clip, asset, updatePropertyValue, setSelectedClipId, s
                 scale={[scale.x, scale.y, scale.z]}
                 rotation={[Math.PI * (rotation.x / 180), Math.PI * (rotation.y / 180), Math.PI * (rotation.z / 180)]}
             >
-                <group position={[-anchorPoint.x, -anchorPoint.y, -anchorPoint.z]}>
-                    {hasMasks ? (
-                        <MaskedLayer width={width} height={height} mode="alpha" invert={false} mask={<LayerMask width={width} height={height} clip={clip} time={time} />}>
-                            <mesh position={[width / 2, height / 2, 0]} onClick={handleClick}>
-                                <planeGeometry args={[width, height]} />
-                                <meshBasicMaterial map={texture} transparent opacity={opacity} side={THREE.DoubleSide} />
-                            </mesh>
-                        </MaskedLayer>
-                    ) : (
-                        <mesh position={[width / 2, height / 2, 0]} onClick={handleClick}>
-                            <planeGeometry args={[width, height]} />
-                            <meshBasicMaterial map={texture} transparent opacity={opacity} side={THREE.DoubleSide} />
-                        </mesh>
-                    )}
-                </group>
+                <group position={[-anchorPoint.x, -anchorPoint.y, -anchorPoint.z]}>{meshContent}</group>
             </group>
         </PivotControls>
     );
