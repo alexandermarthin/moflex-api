@@ -51,9 +51,10 @@ async function generateVideo(videoPath) {
 /**
  * Render a video for the given template
  * @param {string} templateId - The template ID to render
+ * @param {Object} data - Optional data to update editable fields (e.g., { Headline: "Hello", Left: -500 })
  * @returns {Promise<{videoPath: string, outputDir: string}>} - Paths for cleanup
  */
-export async function renderVideo(templateId) {
+export async function renderVideo(templateId, data = null) {
     let browser;
     try {
         // Clean output directory before starting
@@ -79,10 +80,15 @@ export async function renderVideo(templateId) {
         await page.setViewport({
             width: 1920,
             height: 1080,
+            deviceScaleFactor: 2,
         });
 
         // Navigate to the URL with increased timeout
-        const url = `http://localhost:4000/renderpage/${templateId}`;
+        let url = `http://localhost:4000/renderpage/${templateId}`;
+        if (data) {
+            const encodedData = Buffer.from(JSON.stringify(data)).toString("base64");
+            url += `?data=${encodedData}`;
+        }
 
         console.log(`Loading page for template: ${templateId}...`);
         await page.goto(url, {

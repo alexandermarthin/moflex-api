@@ -11,7 +11,7 @@ export default function App() {
 
                 <Route path="/editorpage/:projectId" element={<EditorPage />} />
 
-                <Route path="/" element={<Navigate to="/editorpage/632ab2e9-70fb-429e-a682-a3542fcc9cd8" replace />} />
+                <Route path="/" element={<Navigate to="/editorpage/template1" replace />} />
             </Routes>
         </BrowserRouter>
     );

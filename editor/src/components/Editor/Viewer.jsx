@@ -157,7 +157,7 @@ export default function Viewer() {
         <>
             <div>
                 <div style={{ width: width * viewerZoom, height: height * viewerZoom }}>
-                    <Canvas gl={{ outputColorSpace: THREE.SRGBColorSpace, alpha: true, premultipliedAlpha: false }} flat>
+                    <Canvas gl={{ outputColorSpace: THREE.SRGBColorSpace, alpha: true, premultipliedAlpha: false, antialias: true }} flat>
                         {(() => {
                             const bgColor = new THREE.Color(comp?.backgroundColor.red || 0, comp?.backgroundColor.green || 0, comp?.backgroundColor.blue || 0);
                             bgColor.convertSRGBToLinear();

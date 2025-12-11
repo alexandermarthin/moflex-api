@@ -56,7 +56,7 @@ function cleanup(videoPath, outputDir) {
 
 // Render endpoint - renders video, uploads to S3, returns URL
 fastify.post("/render", async (request, reply) => {
-    const { templateId } = request.body || {};
+    const { templateId, data } = request.body || {};
 
     if (!templateId) {
         return reply.status(400).send({ error: 'Missing "templateId" in request body' });
@@ -65,7 +65,8 @@ fastify.post("/render", async (request, reply) => {
     try {
         // Render the video
         console.log(`Starting render for template: ${templateId}`);
-        const { videoPath, outputDir } = await renderVideo(templateId);
+        if (data) console.log(`With data:`, data);
+        const { videoPath, outputDir } = await renderVideo(templateId, data);
 
         // Upload to S3
         console.log(`Uploading video to S3: ${videoPath}`);
