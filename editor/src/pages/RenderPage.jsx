@@ -32,6 +32,8 @@ export default function EditorPage() {
                 const maxTime = useProjectStore.getState().getActiveCompMaxTime();
                 useTimerStore.getState().setMaxTime(maxTime);
                 window.maxTime = maxTime;
+                const frameRate = useProjectStore.getState().getActiveCompFrameRate();
+                window.frameRate = frameRate;
 
                 // Apply data from URL query params if present
                 const dataParam = searchParams.get("data");

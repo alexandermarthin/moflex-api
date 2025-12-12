@@ -66,7 +66,7 @@ fastify.post("/render", async (request, reply) => {
         // Render the video
         console.log(`Starting render for template: ${templateId}`);
         if (data) console.log(`With data:`, data);
-        const { videoPath, outputDir } = await renderVideo(templateId, data);
+        const { videoPath, outputDir, stats } = await renderVideo(templateId, data);
 
         // Upload to S3
         console.log(`Uploading video to S3: ${videoPath}`);
@@ -75,7 +75,15 @@ fastify.post("/render", async (request, reply) => {
         // Clean up local files
         cleanup(videoPath, outputDir);
 
-        return { url };
+        return {
+            url,
+            stats: {
+                totalTimeSec: stats.totalTimeSec,
+                frameCount: stats.frameCount,
+                fps: stats.fps,
+                avgTimePerFrameSec: stats.avgTimePerFrameSec,
+            },
+        };
     } catch (error) {
         console.error("Render failed:", error);
         return reply.status(500).send({ error: "Render failed", details: error.message });

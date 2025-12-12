@@ -22,14 +22,14 @@ function cleanOutputDirectory() {
     }
 }
 
-async function generateVideo(videoPath) {
+async function generateVideo(videoPath, fps) {
     return new Promise((resolve, reject) => {
         ffmpeg()
-            .input(`${OUTPUT_DIR}/frame_%04d.jpg`)
-            .inputFPS(25)
+            .input(`${OUTPUT_DIR}/frame_%04d.png`)
+            .inputFPS(fps)
             .output(videoPath)
             .videoCodec("h264_videotoolbox") //libx264
-            .outputFPS(25)
+            .outputFPS(fps)
             .addOption("-color_primaries", "bt709")
             .addOption("-color_trc", "bt709")
             .addOption("-colorspace", "bt709")
@@ -61,7 +61,6 @@ export async function renderVideo(templateId, data = null) {
         cleanOutputDirectory();
 
         const startTime = Date.now();
-        const fps = 25;
 
         // Generate UUID for video filename
         const videoId = crypto.randomUUID();
@@ -98,11 +97,12 @@ export async function renderVideo(templateId, data = null) {
 
         console.log("Page loaded successfully");
 
-        // Get maxTime from the page
+        // Get maxTime and frameRate from the page
         const endTime = await page.evaluate(() => window.maxTime);
-        console.log(`Using maxTime from page: ${endTime} seconds`);
+        const fps = await page.evaluate(() => window.frameRate);
+        console.log(`Using maxTime: ${endTime}s, frameRate: ${fps}fps`);
 
-        const totalFrames = endTime * fps - 1;
+        const totalFrames = Math.round(endTime * fps) - 1;
 
         // Capture frames
         for (let frame = 0; frame <= totalFrames; frame++) {
@@ -113,9 +113,9 @@ export async function renderVideo(templateId, data = null) {
             }, currentTime);
 
             await page.screenshot({
-                path: `${OUTPUT_DIR}/frame_${String(frame).padStart(4, "0")}.jpg`,
-                type: "jpeg",
-                quality: 100,
+                path: `${OUTPUT_DIR}/frame_${String(frame).padStart(4, "0")}.png`,
+                type: "png",
+                // quality: 100,
                 fullPage: true,
             });
 
@@ -130,12 +130,25 @@ export async function renderVideo(templateId, data = null) {
 
         // Generate video from frames
         console.log("Starting video generation...");
-        await generateVideo(videoPath);
+        await generateVideo(videoPath, fps);
 
-        const totalTime = (Date.now() - startTime) / 1000;
-        console.log(`Process completed! Total time: ${totalTime.toFixed(2)} seconds`);
+        const totalTimeSec = (Date.now() - startTime) / 1000;
+        const frameCount = totalFrames + 1;
+        const avgTimePerFrameSec = totalTimeSec / frameCount;
 
-        return { videoPath, outputDir: OUTPUT_DIR };
+        console.log(`Process completed! Total time: ${totalTimeSec.toFixed(2)} seconds`);
+        console.log(`Rendered ${frameCount} frames, avg ${avgTimePerFrameSec.toFixed(3)}s per frame`);
+
+        return {
+            videoPath,
+            outputDir: OUTPUT_DIR,
+            stats: {
+                totalTimeSec: parseFloat(totalTimeSec.toFixed(2)),
+                frameCount,
+                fps,
+                avgTimePerFrameSec: parseFloat(avgTimePerFrameSec.toFixed(3)),
+            },
+        };
     } catch (error) {
         // Try to close the browser if it exists
         if (browser) {
