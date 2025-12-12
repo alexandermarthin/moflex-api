@@ -1,15 +1,15 @@
 import * as THREE from "three";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useLoader } from "@react-three/fiber";
 import { TextureLoader } from "three";
-import { getTransform } from "@/lib/layer-utils";
+import { getTransform, getWorldTransformMatrix } from "@/lib/layer-utils";
 import { getValueAtTime } from "@/lib/anim-utils";
 import { FILE_API_ENDPOINTS } from "@/lib/constants";
 import { PivotControls } from "@react-three/drei";
 import MaskedLayer from "@/components/Editor/Layers/MaskedLayer";
 import LayerMask from "@/components/Editor/Layers/LayerMask";
 
-const ImageLayer = ({ id, clip, asset, updatePropertyValue, setSelectedClipId, selectedClipId, time, parentClip, projectId, compWidth, compHeight }) => {
+const ImageLayer = ({ id, clip, asset, updatePropertyValue, setSelectedClipId, selectedClipId, time, parentClip, projectId, compWidth, compHeight, clips }) => {
     const { anchorPoint, position, scale, rotation, relativePosition, relativeScale, relativeRotation } = getTransform(clip, time);
 
     // Initialize local state with current relative values from store
@@ -85,6 +85,19 @@ const ImageLayer = ({ id, clip, asset, updatePropertyValue, setSelectedClipId, s
         anchorPoint,
     };
 
+    // For masked layers, compute world transform matrix that includes all parent transforms
+    // This supports any depth of parenting (grandparent → parent → child)
+    const worldTransformMatrix = useMemo(() => {
+        if (!hasMasks) return null;
+        
+        // Use recursive function that walks entire parent chain
+        if (clips && clip.parentLayerId) {
+            return getWorldTransformMatrix(clip, time, clips);
+        }
+        
+        return null;
+    }, [hasMasks, clip, time, clips]);
+
     // The mesh content (same for both masked and non-masked)
     const meshContent = (
         <mesh position={[width / 2, height / 2, 0]} onClick={handleClick}>
@@ -95,6 +108,7 @@ const ImageLayer = ({ id, clip, asset, updatePropertyValue, setSelectedClipId, s
 
     // For masked layers, MaskedLayer handles transforms internally at comp resolution
     if (hasMasks) {
+        // Use transformMatrix when layer has parent(s), otherwise use transform object
         const maskedContent = (
             <PivotControls
                 matrix={matrix}
@@ -108,8 +122,8 @@ const ImageLayer = ({ id, clip, asset, updatePropertyValue, setSelectedClipId, s
                 rotation={[Math.PI, 0, 0]}
                 onDrag={(localMatrix, deltaLocalMatrix, worldMatrix, deltaWorldMatrix) => {
                     // Extract position from the matrix
-                    const position = [localMatrix.elements[12], localMatrix.elements[13], localMatrix.elements[14]];
-                    setLocalRelativePosition(position);
+                    const pos = [localMatrix.elements[12], localMatrix.elements[13], localMatrix.elements[14]];
+                    setLocalRelativePosition(pos);
 
                     // Extract scale from the matrix (as final scale multipliers, not relative additions)
                     const sx = Math.sqrt(localMatrix.elements[0] ** 2 + localMatrix.elements[1] ** 2 + localMatrix.elements[2] ** 2);
@@ -149,7 +163,8 @@ const ImageLayer = ({ id, clip, asset, updatePropertyValue, setSelectedClipId, s
                     height={height}
                     mode="alpha"
                     invert={false}
-                    transform={transform}
+                    transform={worldTransformMatrix ? undefined : transform}
+                    transformMatrix={worldTransformMatrix}
                     mask={<LayerMask width={width} height={height} clip={clip} time={time} />}
                 >
                     {meshContent}
@@ -157,20 +172,7 @@ const ImageLayer = ({ id, clip, asset, updatePropertyValue, setSelectedClipId, s
             </PivotControls>
         );
 
-        if (parentClip) {
-            const { anchorPoint: parentAnchorPoint, position: parentPosition, scale: parentScale, rotation: parentRotation } = getTransform(parentClip, time);
-
-            return (
-                <group
-                    position={[parentPosition.x, parentPosition.y, parentPosition.z]}
-                    scale={[parentScale.x, parentScale.y, parentScale.z]}
-                    rotation={[Math.PI * (parentRotation.x / 180), Math.PI * (parentRotation.y / 180), Math.PI * (parentRotation.z / 180)]}
-                >
-                    <group position={[-parentAnchorPoint.x, -parentAnchorPoint.y, -parentAnchorPoint.z]}>{maskedContent}</group>
-                </group>
-            );
-        }
-
+        // No parent wrapper needed for masked layers - parent transforms are baked into worldTransformMatrix
         return maskedContent;
     }
 

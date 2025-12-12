@@ -1,12 +1,12 @@
 import * as THREE from "three";
 import { getValueAtTime } from "@/lib/anim-utils";
-import { getTransform } from "@/lib/layer-utils";
+import { getTransform, getWorldTransformMatrix } from "@/lib/layer-utils";
 import { PivotControls } from "@react-three/drei";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import MaskedLayer from "@/components/Editor/Layers/MaskedLayer";
 import LayerMask from "@/components/Editor/Layers/LayerMask";
 
-const SolidLayer = ({ id, clip, solidItem, updatePropertyValue, setSelectedClipId, selectedClipId, time, parentClip, compWidth, compHeight }) => {
+const SolidLayer = ({ id, clip, solidItem, updatePropertyValue, setSelectedClipId, selectedClipId, time, parentClip, compWidth, compHeight, clips }) => {
     const opacity = clip.properties["Opacity"].keyframes.length > 0 ? getValueAtTime(clip.properties["Opacity"], time) / 100 : clip.properties["Opacity"].value / 100;
 
     const color = new THREE.Color(solidItem.solidColor.red, solidItem.solidColor.green, solidItem.solidColor.blue);
@@ -72,6 +72,19 @@ const SolidLayer = ({ id, clip, solidItem, updatePropertyValue, setSelectedClipI
         anchorPoint,
     };
 
+    // For masked layers, compute world transform matrix that includes all parent transforms
+    // This supports any depth of parenting (grandparent → parent → child)
+    const worldTransformMatrix = useMemo(() => {
+        if (!hasMasks) return null;
+
+        // Use recursive function that walks entire parent chain
+        if (clips && clip.parentLayerId) {
+            return getWorldTransformMatrix(clip, time, clips);
+        }
+
+        return null;
+    }, [hasMasks, clip, time, clips]);
+
     // The mesh content (same for both masked and non-masked)
     const meshContent = (
         <mesh position={[width / 2, height / 2, 0]} onClick={handleClick}>
@@ -82,6 +95,7 @@ const SolidLayer = ({ id, clip, solidItem, updatePropertyValue, setSelectedClipI
 
     // For masked layers, MaskedLayer handles transforms internally at comp resolution
     if (hasMasks) {
+        // Use transformMatrix when layer has parent(s), otherwise use transform object
         const maskedContent = (
             <PivotControls
                 matrix={matrix}
@@ -136,7 +150,8 @@ const SolidLayer = ({ id, clip, solidItem, updatePropertyValue, setSelectedClipI
                     height={height}
                     mode="alpha"
                     invert={false}
-                    transform={transform}
+                    transform={worldTransformMatrix ? undefined : transform}
+                    transformMatrix={worldTransformMatrix}
                     mask={<LayerMask width={width} height={height} clip={clip} time={time} />}
                 >
                     {meshContent}
@@ -144,20 +159,7 @@ const SolidLayer = ({ id, clip, solidItem, updatePropertyValue, setSelectedClipI
             </PivotControls>
         );
 
-        if (parentClip) {
-            const { anchorPoint: parentAnchorPoint, position: parentPosition, scale: parentScale, rotation: parentRotation } = getTransform(parentClip, time);
-
-            return (
-                <group
-                    position={[parentPosition.x, parentPosition.y, parentPosition.z]}
-                    scale={[parentScale.x, parentScale.y, parentScale.z]}
-                    rotation={[Math.PI * (parentRotation.x / 180), Math.PI * (parentRotation.y / 180), Math.PI * (parentRotation.z / 180)]}
-                >
-                    <group position={[-parentAnchorPoint.x, -parentAnchorPoint.y, -parentAnchorPoint.z]}>{maskedContent}</group>
-                </group>
-            );
-        }
-
+        // No parent wrapper needed for masked layers - parent transforms are baked into worldTransformMatrix
         return maskedContent;
     }
 

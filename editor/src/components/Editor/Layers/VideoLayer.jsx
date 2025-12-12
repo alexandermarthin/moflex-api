@@ -1,12 +1,12 @@
 import * as THREE from "three";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { getValueAtTime } from "@/lib/anim-utils";
-import { getTransform } from "@/lib/layer-utils";
+import { getTransform, getWorldTransformMatrix } from "@/lib/layer-utils";
 import { FILE_API_ENDPOINTS } from "@/lib/constants";
 import { cacheVideo } from "@/lib/cacheVideo";
 import { PivotControls } from "@react-three/drei";
 
-const VideoLayer = ({ id, clip, asset, updatePropertyValue, setSelectedClipId, selectedClipId, time, parentClip, projectId }) => {
+const VideoLayer = ({ id, clip, asset, updatePropertyValue, setSelectedClipId, selectedClipId, time, parentClip, projectId, clips }) => {
     const [videoTexture, setVideoTexture] = useState(null);
 
     useEffect(() => {

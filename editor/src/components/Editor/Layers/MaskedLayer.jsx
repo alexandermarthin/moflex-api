@@ -14,8 +14,9 @@ import { useFBO } from "@react-three/drei";
  *  - children: content to be masked (rendered to colorRT)
  *  - mask: mask geometry (rendered to maskRT as white on black)
  *  - transform: { position, scale, rotation, anchorPoint } - applied inside FBO scenes
+ *  - transformMatrix: THREE.Matrix4 - if provided, used instead of transform object (for combined parent+child transforms)
  */
-export default function MaskedLayer({ compWidth, compHeight, width, height, mode = "alpha", invert = false, children, mask, transform }) {
+export default function MaskedLayer({ compWidth, compHeight, width, height, mode = "alpha", invert = false, children, mask, transform, transformMatrix }) {
     const gl = useThree((s) => s.gl);
 
     // Use comp dimensions for FBOs to render at output resolution
@@ -130,16 +131,37 @@ export default function MaskedLayer({ compWidth, compHeight, width, height, mode
         matRef.current && (matRef.current.uniforms.tMask.value = maskRT.texture);
     });
 
-    // Build transform group props from transform object
-    const transformGroupProps = transform
-        ? {
-              position: [transform.position.x, transform.position.y, transform.position.z],
-              scale: [transform.scale.x, transform.scale.y, transform.scale.z],
-              rotation: [Math.PI * (transform.rotation.x / 180), Math.PI * (transform.rotation.y / 180), Math.PI * (transform.rotation.z / 180)],
-          }
-        : {};
+    // Build transform group props from either matrix or transform object
+    const transformGroupProps = useMemo(() => {
+        if (transformMatrix) {
+            // Decompose matrix into position/rotation/scale
+            const pos = new THREE.Vector3();
+            const quat = new THREE.Quaternion();
+            const scl = new THREE.Vector3();
+            transformMatrix.decompose(pos, quat, scl);
 
-    const anchorOffset = transform ? [-transform.anchorPoint.x, -transform.anchorPoint.y, -transform.anchorPoint.z] : [0, 0, 0];
+            const euler = new THREE.Euler().setFromQuaternion(quat, "ZYX");
+
+            return {
+                position: [pos.x, pos.y, pos.z],
+                scale: [scl.x, scl.y, scl.z],
+                rotation: [euler.x, euler.y, euler.z], // Already in radians
+            };
+        }
+
+        if (transform) {
+            return {
+                position: [transform.position.x, transform.position.y, transform.position.z],
+                scale: [transform.scale.x, transform.scale.y, transform.scale.z],
+                rotation: [Math.PI * (transform.rotation.x / 180), Math.PI * (transform.rotation.y / 180), Math.PI * (transform.rotation.z / 180)],
+            };
+        }
+
+        return {};
+    }, [transform, transformMatrix]);
+
+    // Anchor offset only needed when using transform object (not matrix, since matrix has anchor baked in)
+    const anchorOffset = transform && !transformMatrix ? [-transform.anchorPoint.x, -transform.anchorPoint.y, -transform.anchorPoint.z] : [0, 0, 0];
 
     return (
         <>

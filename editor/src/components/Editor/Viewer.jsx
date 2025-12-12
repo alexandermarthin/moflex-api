@@ -26,7 +26,8 @@ const ThreeDScene = ({ width, height, assets, clips, updatePropertyValue, setSel
     };
     const renderClipEl = (id, clip) => {
         const parentClip = clip.parentLayerId ? clips[clip.parentLayerId] : null;
-        const common = { id, clip, updatePropertyValue, setSelectedClipId, selectedClipId, time, parentClip, projectId, compWidth: width, compHeight: height };
+        // Pass clips for recursive parent chain resolution (supports multiple parent levels)
+        const common = { id, clip, updatePropertyValue, setSelectedClipId, selectedClipId, time, parentClip, projectId, compWidth: width, compHeight: height, clips };
         switch (clip.layerType) {
             case "solid":
                 return <SolidLayer key={id} {...common} solidItem={assets[clip.sourceId]} />;
