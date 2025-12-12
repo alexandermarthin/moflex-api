@@ -112,12 +112,15 @@ export async function renderVideo(templateId, data = null) {
                 window.setTime(time);
             }, currentTime);
 
-            await page.screenshot({
-                path: `${OUTPUT_DIR}/frame_${String(frame).padStart(4, "0")}.png`,
-                type: "png",
-                // quality: 100,
-                fullPage: true,
-            });
+            // Capture frame directly from WebGL canvas
+            const base64Data = await page.evaluate(() => window.captureFrame());
+            if (!base64Data) {
+                throw new Error(`Failed to capture frame ${frame}`);
+            }
+
+            // Write base64 PNG data to file
+            const framePath = `${OUTPUT_DIR}/frame_${String(frame).padStart(4, "0")}.png`;
+            fs.writeFileSync(framePath, Buffer.from(base64Data, "base64"));
 
             console.log(`Captured frame ${frame}/${totalFrames} at time ${currentTime.toFixed(3)}s`);
         }

@@ -17,6 +17,16 @@ export default function EditorPage() {
     useEffect(() => {
         window.setTime = setTime;
         setViewerZoom(1);
+
+        // Expose captureFrame for render service to grab frames directly from WebGL
+        window.captureFrame = () => {
+            const canvas = document.querySelector("canvas");
+            if (!canvas) return null;
+            // Returns base64 PNG data URL (strips the "data:image/png;base64," prefix)
+            const dataUrl = canvas.toDataURL("image/png");
+            return dataUrl.replace(/^data:image\/png;base64,/, "");
+        };
+
         async function loadProject() {
             try {
                 useEditorStore.getState().setProjectId(projectId);
