@@ -18,6 +18,10 @@ export default function EditorPage() {
         window.setTime = setTime;
         setViewerZoom(1);
 
+        // Check if rendering with alpha transparency (preset ends with "alpha")
+        const preset = searchParams.get("preset") || "mp4";
+        window.renderWithAlpha = preset.toLowerCase().includes("alpha");
+
         // Expose captureFrame for render service to grab frames directly from WebGL
         window.captureFrame = () => {
             const canvas = document.querySelector("canvas");

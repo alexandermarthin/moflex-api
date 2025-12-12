@@ -54,23 +54,30 @@ function cleanup(videoPath, outputDir) {
     }
 }
 
+// Valid presets for video encoding
+const VALID_PRESETS = ["mp4", "prores4444alpha", "VP9alpha"];
+
 // Render endpoint - renders video, uploads to S3, returns URL
 fastify.post("/render", async (request, reply) => {
-    const { templateId, data } = request.body || {};
+    const { templateId, data, preset = "mp4" } = request.body || {};
 
     if (!templateId) {
         return reply.status(400).send({ error: 'Missing "templateId" in request body' });
     }
 
+    if (!VALID_PRESETS.includes(preset)) {
+        return reply.status(400).send({ error: `Invalid preset "${preset}". Valid presets: ${VALID_PRESETS.join(", ")}` });
+    }
+
     try {
         // Render the video
-        console.log(`Starting render for template: ${templateId}`);
+        console.log(`Starting render for template: ${templateId} (preset: ${preset})`);
         if (data) console.log(`With data:`, data);
-        const { videoPath, outputDir, stats } = await renderVideo(templateId, data);
+        const { videoPath, outputDir, stats } = await renderVideo(templateId, data, preset);
 
         // Upload to S3
         console.log(`Uploading video to S3: ${videoPath}`);
-        const { url } = await uploadFile(videoPath);
+        const { url, uploadStats } = await uploadFile(videoPath);
 
         // Clean up local files
         cleanup(videoPath, outputDir);
@@ -82,6 +89,7 @@ fastify.post("/render", async (request, reply) => {
                 frameCount: stats.frameCount,
                 fps: stats.fps,
                 avgTimePerFrameSec: stats.avgTimePerFrameSec,
+                upload: uploadStats,
             },
         };
     } catch (error) {

@@ -22,20 +22,34 @@ function cleanOutputDirectory() {
     }
 }
 
-async function generateVideo(videoPath, fps) {
+async function generateVideo(videoPath, fps, preset = "mp4") {
     return new Promise((resolve, reject) => {
-        ffmpeg()
-            .input(`${OUTPUT_DIR}/frame_%04d.png`)
-            .inputFPS(fps)
-            .output(videoPath)
-            .videoCodec("h264_videotoolbox") //libx264
-            .outputFPS(fps)
-            .addOption("-color_primaries", "bt709")
-            .addOption("-color_trc", "bt709")
-            .addOption("-colorspace", "bt709")
-            .addOption("-color_range", "tv")
-            .addOption("-pix_fmt", "yuv444p") //yuv420p yuv444p
-            .addOption("-b:v", "10000k")
+        const command = ffmpeg().input(`${OUTPUT_DIR}/frame_%04d.png`).inputFPS(fps).output(videoPath).outputFPS(fps);
+
+        switch (preset) {
+            case "prores4444alpha":
+                // ProRes 4444 with alpha channel support (.mov)
+                command.videoCodec("prores_ks").addOption("-profile:v", "4444").addOption("-pix_fmt", "yuva444p10le");
+                break;
+            case "VP9alpha":
+                // VP9 with alpha channel support (.webm)
+                command.videoCodec("libvpx-vp9").addOption("-pix_fmt", "yuva420p").addOption("-b:v", "10000k");
+                break;
+            case "mp4":
+            default:
+                // H.264 without alpha (.mp4)
+                command
+                    .videoCodec("h264_videotoolbox") //libx264
+                    .addOption("-color_primaries", "bt709")
+                    .addOption("-color_trc", "bt709")
+                    .addOption("-colorspace", "bt709")
+                    .addOption("-color_range", "tv")
+                    .addOption("-pix_fmt", "yuv444p") //yuv420p yuv444p
+                    .addOption("-b:v", "10000k");
+                break;
+        }
+
+        command
             .on("end", () => {
                 console.log("Video generation completed");
                 resolve();
@@ -48,13 +62,21 @@ async function generateVideo(videoPath, fps) {
     });
 }
 
+// File extensions for each preset
+const PRESET_EXTENSIONS = {
+    mp4: ".mp4",
+    prores4444alpha: ".mov",
+    VP9alpha: ".webm",
+};
+
 /**
  * Render a video for the given template
  * @param {string} templateId - The template ID to render
  * @param {Object} data - Optional data to update editable fields (e.g., { Headline: "Hello", Left: -500 })
+ * @param {string} preset - Video encoding preset: "mp4", "prores4444alpha", or "VP9alpha"
  * @returns {Promise<{videoPath: string, outputDir: string}>} - Paths for cleanup
  */
-export async function renderVideo(templateId, data = null) {
+export async function renderVideo(templateId, data = null, preset = "mp4") {
     let browser;
     try {
         // Clean output directory before starting
@@ -62,9 +84,9 @@ export async function renderVideo(templateId, data = null) {
 
         const startTime = Date.now();
 
-        // Generate UUID for video filename
+        // Generate UUID for video filename with appropriate extension
         const videoId = crypto.randomUUID();
-        const videoPath = `${videoId}.mp4`;
+        const videoPath = `${videoId}${PRESET_EXTENSIONS[preset] || ".mp4"}`;
 
         // Launch the browser
         browser = await puppeteer.launch({
@@ -84,9 +106,15 @@ export async function renderVideo(templateId, data = null) {
 
         // Navigate to the URL with increased timeout
         let url = `http://localhost:4000/renderpage/${templateId}`;
+        const params = new URLSearchParams();
         if (data) {
-            const encodedData = Buffer.from(JSON.stringify(data)).toString("base64");
-            url += `?data=${encodedData}`;
+            params.set("data", Buffer.from(JSON.stringify(data)).toString("base64"));
+        }
+        if (preset !== "mp4") {
+            params.set("preset", preset);
+        }
+        if (params.toString()) {
+            url += `?${params.toString()}`;
         }
 
         console.log(`Loading page for template: ${templateId}...`);
@@ -133,7 +161,7 @@ export async function renderVideo(templateId, data = null) {
 
         // Generate video from frames
         console.log("Starting video generation...");
-        await generateVideo(videoPath, fps);
+        await generateVideo(videoPath, fps, preset);
 
         const totalTimeSec = (Date.now() - startTime) / 1000;
         const frameCount = totalFrames + 1;

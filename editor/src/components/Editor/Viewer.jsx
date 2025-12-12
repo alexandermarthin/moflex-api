@@ -159,11 +159,12 @@ export default function Viewer() {
             <div>
                 <div style={{ width: width * viewerZoom, height: height * viewerZoom }}>
                     <Canvas gl={{ outputColorSpace: THREE.SRGBColorSpace, alpha: true, premultipliedAlpha: false, antialias: true, preserveDrawingBuffer: true }} flat>
-                        {(() => {
-                            const bgColor = new THREE.Color(comp?.backgroundColor.red || 0, comp?.backgroundColor.green || 0, comp?.backgroundColor.blue || 0);
-                            bgColor.convertSRGBToLinear();
-                            return <color attach="background" args={[bgColor.r, bgColor.g, bgColor.b]} />;
-                        })()}
+                        {!window.renderWithAlpha &&
+                            (() => {
+                                const bgColor = new THREE.Color(comp?.backgroundColor.red || 0, comp?.backgroundColor.green || 0, comp?.backgroundColor.blue || 0);
+                                bgColor.convertSRGBToLinear();
+                                return <color attach="background" args={[bgColor.r, bgColor.g, bgColor.b]} />;
+                            })()}
                         <ThreeDScene
                             width={width}
                             height={height}
