@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from "react";
 import * as THREE from "three";
 import { getValueAtTime } from "@/lib/anim-utils";
-import { getTransform } from "@/lib/layer-utils";
+import { getTransform, getWorldTransformMatrix } from "@/lib/layer-utils";
 import { PivotControls } from "@react-three/drei";
 
-const ShapeLayer = ({ id, clip, updatePropertyValue, setSelectedClipId, selectedClipId, time, parentClip }) => {
+const ShapeLayer = ({ id, clip, updatePropertyValue, setSelectedClipId, selectedClipId, time, parentClip, clips }) => {
     if (!clip || clip.layerType !== "shape" || !clip.shapeContents) {
         return null;
     }

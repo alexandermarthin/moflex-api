@@ -1,0 +1,5 @@
+---
+alwaysApply: true
+---
+
+We are building a render engine that needs to be able to render any after effects project exportet as json. Do not propose simple fixes that do not enable the render engine to render any full after effects project.

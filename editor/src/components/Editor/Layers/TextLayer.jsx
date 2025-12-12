@@ -1,11 +1,11 @@
 import * as THREE from "three";
 import { Text } from "@react-three/drei";
 import { getValueAtTime } from "@/lib/anim-utils";
-import { getTransform } from "@/lib/layer-utils";
+import { getTransform, getWorldTransformMatrix } from "@/lib/layer-utils";
 import { PivotControls } from "@react-three/drei";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
-const TextLayer = ({ id, clip, updatePropertyValue, setSelectedClipId, selectedClipId, time, parentClip }) => {
+const TextLayer = ({ id, clip, updatePropertyValue, setSelectedClipId, selectedClipId, time, parentClip, clips }) => {
     const opacity = clip.properties["Opacity"].keyframes.length > 0 ? getValueAtTime(clip.properties["Opacity"], time) / 100 : clip.properties["Opacity"].value / 100;
 
     const color = new THREE.Color(clip.text.fillColor[0], clip.text.fillColor[1], clip.text.fillColor[2]);
