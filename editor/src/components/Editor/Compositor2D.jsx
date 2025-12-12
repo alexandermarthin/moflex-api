@@ -89,8 +89,12 @@ export default function Compositor2D({
                 void main(){
                   vec4 base = texture2D(uBase, vUv);
                   vec4 lay  = texture2D(uLayer, vUv);
+                  
+                  // Unpremultiply the layer (convert from premultiplied to straight alpha)
+                  vec3 layRGB = lay.a > 0.001 ? lay.rgb / lay.a : vec3(0.0);
+                  
                   float a = clamp(lay.a * uOpacity, 0.0, 1.0);
-                  vec3 blended = applyBlend(uBlendMode, base.rgb, lay.rgb);
+                  vec3 blended = applyBlend(uBlendMode, base.rgb, layRGB);
                   vec3 outRGB = mix(base.rgb, blended, a);
                   float outA  = a + base.a * (1.0 - a);
                   gl_FragColor = vec4(outRGB, outA);
