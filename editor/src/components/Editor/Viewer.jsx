@@ -94,7 +94,8 @@ const ThreeDScene = ({ width, height, assets, clips, updatePropertyValue, setSel
                 };
 
                 for (const [id, clip] of orderedEntries) {
-                    if (clip.inPoint > time) continue;
+                    if (clip.inPoint > time || clip.outPoint <= time) continue;
+                    if (clip.enabled === false) continue;
                     if (consumed.has(id)) continue;
 
                     const tm = clip.trackMatte; // { matteLayerId, mode }

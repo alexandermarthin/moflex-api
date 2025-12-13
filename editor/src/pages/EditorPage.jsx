@@ -67,14 +67,14 @@ export default function EditorPage() {
                             </div>
                         </div>
                     </div>
-                    <div className="h-1/2 border">
+                    <div className="h-64 border overflow-y-auto">
                         <ClipList />
                     </div>
                 </div>
-                <div className="flex flex-col w-1/5">
+                <div className="flex flex-col w-1/6">
                     <Inspector />
                 </div>
-                <div className=" w-1/5 border">
+                <div className=" w-1/6 border">
                     <JsonView jsonState={storeData} />
                 </div>
             </div>
