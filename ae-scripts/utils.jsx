@@ -124,10 +124,31 @@ function saveToFile(text) {
     var outputPath = (typeof CONFIG !== "undefined" && CONFIG.outputPath)
         ? CONFIG.outputPath
         : "/Users/lumafilm/Documents/code/moflex-api/editor/public/project.json";
-    var saveFile = File(outputPath);
-    saveFile.open("w");
-    saveFile.write(text);
-    saveFile.close();
+    
+    // Log what we're about to save
+    if (!text || text.length === 0) {
+        logToFile("ERROR: saveToFile called with empty text!", 1);
+        return;
+    }
+    logToFile("Saving " + text.length + " characters to: " + outputPath, 1);
+    
+    try {
+        var saveFile = File(outputPath);
+        var opened = saveFile.open("w");
+        if (!opened) {
+            logToFile("ERROR: Failed to open file for writing: " + outputPath, 1);
+            return;
+        }
+        saveFile.encoding = "UTF-8";
+        var written = saveFile.write(text);
+        if (!written) {
+            logToFile("ERROR: Failed to write to file: " + outputPath, 1);
+        }
+        saveFile.close();
+        logToFile("File saved successfully", 1);
+    } catch (e) {
+        logToFile("ERROR: saveToFile exception: " + e.toString(), 1);
+    }
 }
 
 // Polyfill for checking if a variable is an array

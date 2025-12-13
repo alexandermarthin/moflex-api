@@ -68,20 +68,21 @@ function exportProject() {
     }
 
     // Process Essential Graphics for the active composition
+    // (Commented out - uncomment to enable Essential Graphics export)
     var essentialGraphicsData = null;
-    try {
-        if (app.project.activeItem && app.project.activeItem instanceof CompItem) {
-            essentialGraphicsData = processEssentialGraphics(app.project.activeItem);
-            if (essentialGraphicsData && essentialGraphicsData.error) {
-                logToFile("Essential Graphics error: " + essentialGraphicsData.error, 1);
-            }
-        }
-    } catch (egError) {
-        logToFile("Error processing Essential Graphics: " + egError.toString(), 1);
-        essentialGraphicsData = {
-            error: "Failed to process Essential Graphics: " + egError.toString()
-        };
-    }
+    // try {
+    //     if (app.project.activeItem && app.project.activeItem instanceof CompItem) {
+    //         essentialGraphicsData = processEssentialGraphics(app.project.activeItem);
+    //         if (essentialGraphicsData && essentialGraphicsData.error) {
+    //             logToFile("Essential Graphics error: " + essentialGraphicsData.error, 1);
+    //         }
+    //     }
+    // } catch (egError) {
+    //     logToFile("Error processing Essential Graphics: " + egError.toString(), 1);
+    //     essentialGraphicsData = {
+    //         error: "Failed to process Essential Graphics: " + egError.toString()
+    //     };
+    // }
 
     // Create the final output object
     var outputData = {
@@ -93,7 +94,16 @@ function exportProject() {
     };
 
     // Convert to JSON and save
-    var json = stringify(outputData);
+    logToFile("Converting to JSON...", 1);
+    var json;
+    try {
+        json = stringify(outputData);
+        logToFile("JSON length: " + (json ? json.length : "null/undefined"), 1);
+    } catch (stringifyError) {
+        logToFile("ERROR: stringify failed - " + stringifyError.toString(), 1);
+        return;
+    }
+    
     saveToFile(json);
     
     logToFile("Export complete: " + Object.keys(assets).length + " assets, " + Object.keys(clips).length + " clips", 1);
@@ -105,11 +115,12 @@ try {
     exportProject();
     
     // Run API dump to discover available Essential Graphics properties
-    try {
-        runAPIDump();
-    } catch (dumpError) {
-        logToFile("API dump failed: " + dumpError.toString(), 1);
-    }
+    // (Commented out - uncomment to enable API dump)
+    // try {
+    //     runAPIDump();
+    // } catch (dumpError) {
+    //     logToFile("API dump failed: " + dumpError.toString(), 1);
+    // }
 } catch (exportError) {
     logToFile("ERROR: Export failed - " + exportError.toString(), 1);
     if (exportError.line) {
